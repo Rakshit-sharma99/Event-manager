@@ -12,10 +12,10 @@
     $user = auth()->user();
     $activeEvent = $user?->role === 'planner' ? $user->events()->orderBy('event_date')->first() : null;
 @endphp
-<div class="eventra-shell relative z-10 flex">
-    <div class="beam hidden lg:block"></div>
+<div data-laserflow='{"fogIntensity":0.18,"wispIntensity":5.5,"globalIntensity":0.34,"mobileIntensity":0.18,"verticalBeamOffset":0.1,"horizontalSizing":1.0}' class="laserflow-hero laserflow-dashboard" aria-hidden="true"></div>
+<div class="eventra-shell app-shell relative z-10 flex">
 
-    <aside class="fixed inset-y-0 left-0 z-40 w-72 border-r border-white/10 bg-black/45 p-5 backdrop-blur-2xl transition lg:sticky lg:translate-x-0" :class="sidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+    <aside class="app-sidebar fixed inset-y-0 left-0 z-40 w-72 border-r border-white/10 p-5 backdrop-blur-2xl transition lg:sticky lg:translate-x-0" :class="sidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         <a href="{{ route('dashboard') }}" class="mb-10 flex items-center gap-3">
             <span class="grid h-11 w-11 place-items-center rounded-2xl border border-eventra-blue/40 bg-eventra-blue/15 shadow-glow"><i data-lucide="gem" class="h-6 w-6 text-eventra-cyan"></i></span>
             <span class="font-display text-2xl font-bold">Eventra</span>
@@ -49,8 +49,8 @@
         </div>
     </aside>
 
-    <div class="min-w-0 flex-1 px-4 py-5 lg:px-8">
-        <header class="glass sticky top-4 z-30 mb-6 flex items-center justify-between rounded-3xl px-4 py-3">
+    <div class="app-main-panel min-w-0 flex-1 px-4 py-5 lg:px-8">
+        <header class="app-topbar sticky top-4 z-30 mb-6 flex items-center justify-between rounded-3xl px-4 py-3">
             <div class="flex items-center gap-3">
                 <button class="btn-ghost !px-3 lg:hidden" @click="sidebar=true"><i data-lucide="menu" class="h-4 w-4"></i></button>
                 <div>

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="eventra-hero-container">
-    <div data-laserflow class="laserflow-hero" aria-hidden="true"></div>
+    <div data-laserflow='{"fogIntensity":0.3,"wispIntensity":9,"globalIntensity":0.68,"mobileIntensity":0.24}' class="laserflow-hero" aria-hidden="true"></div>
 
     <section class="eventra-content-wrapper">
         <div class="eventra-left-section" data-reveal>
@@ -28,7 +28,7 @@
                     <i data-lucide="arrow-right" class="h-4 w-4"></i>
                 </a>
                 <a href="{{ route('login') }}" class="eventra-btn eventra-btn-secondary magnetic">
-                    View demo login
+                    Login
                 </a>
             </div>
 

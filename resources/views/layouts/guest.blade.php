@@ -10,7 +10,8 @@
 </head>
 <body class="aurora-bg">
     <main class="eventra-shell relative z-10">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-6">
+        @unless(trim($__env->yieldContent('hide-nav')))
+        <nav class="guest-nav mx-auto flex max-w-7xl items-center justify-between px-5 py-6">
             <a href="{{ route('landing') }}" class="flex items-center gap-3">
                 <span class="grid h-10 w-10 place-items-center rounded-2xl border border-eventra-blue/40 bg-eventra-blue/15 shadow-glow">
                     <i data-lucide="gem" class="h-5 w-5 text-eventra-cyan"></i>
@@ -29,6 +30,7 @@
                 @endauth
             </div>
         </nav>
+        @endunless
 
         @include('partials.flash')
         {{ $slot ?? '' }}

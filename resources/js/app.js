@@ -53,6 +53,10 @@ document.querySelectorAll('[data-counter]').forEach((el) => {
 });
 
 document.querySelectorAll('[data-laserflow]').forEach((element) => {
+    const customOptions = element.dataset.laserflow && element.dataset.laserflow !== ''
+        ? JSON.parse(element.dataset.laserflow)
+        : {};
+
     mountLaserFlow(element, {
         horizontalBeamOffset: 0.0,
         verticalBeamOffset: 0.35,
@@ -60,10 +64,10 @@ document.querySelectorAll('[data-laserflow]').forEach((element) => {
         verticalSizing: 2.8,
         wispDensity: 1.2,
         wispSpeed: 28.0,
-        wispIntensity: 18.0,
+        wispIntensity: 11.0,
         flowSpeed: 0.42,
         flowStrength: 0.35,
-        fogIntensity: 0.68,
+        fogIntensity: 0.36,
         fogScale: 0.25,
         fogFallSpeed: 0.75,
         decay: 1.25,
@@ -71,5 +75,8 @@ document.querySelectorAll('[data-laserflow]').forEach((element) => {
         mouseTiltStrength: 0.015,
         mouseSmoothTime: 0.08,
         color: '#00D9FF',
+        globalIntensity: 0.78,
+        mobileIntensity: 0.28,
+        ...customOptions,
     });
 });

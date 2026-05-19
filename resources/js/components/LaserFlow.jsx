@@ -145,7 +145,7 @@ export function mountLaserFlow(target, options = {}) {
         wispIntensity: 18.0,
         flowSpeed: 0.42,
         flowStrength: 0.35,
-        fogIntensity: 0.68,
+        fogIntensity: 0.36,
         fogScale: 0.25,
         fogFallSpeed: 0.75,
         decay: 1.25,
@@ -191,7 +191,7 @@ export function mountLaserFlow(target, options = {}) {
         uFalloffStart: { value: props.falloffStart },
         uMouseTiltStrength: { value: isMobile ? 0.004 : props.mouseTiltStrength },
         uMobileMode: { value: isMobile ? 1 : 0 },
-        uGlobalIntensity: { value: isMobile ? 0.34 : 1 },
+        uGlobalIntensity: { value: isMobile ? (props.mobileIntensity ?? 0.28) : (props.globalIntensity ?? 0.78) },
     };
     const material = new THREE.ShaderMaterial({
         vertexShader: VERTEX_SHADER,

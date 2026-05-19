@@ -1,17 +1,32 @@
-@extends('layouts.guest', ['title' => 'Register - Eventra'])
+@extends('layouts.guest', ['title' => 'Sign up - Eventra'])
+@section('hide-nav', '1')
 
 @section('content')
-<section class="mx-auto grid min-h-[78vh] max-w-6xl items-center gap-8 px-5 py-10 lg:grid-cols-[.9fr_1.1fr]">
-    <div data-reveal><p class="chip mb-5">Planner / Vendor / Guest</p><h1 class="font-display text-5xl font-bold">Create your Eventra identity.</h1><p class="mt-4 text-white/60">Role-aware registration routes every user into the right dashboard flow.</p></div>
-    <form method="POST" action="{{ route('register.store') }}" class="glass-strong grid gap-4 rounded-[2rem] p-6 sm:grid-cols-2" data-reveal>
+<section class="auth-stage">
+    <div data-laserflow='{"fogIntensity":0.2,"wispIntensity":5,"globalIntensity":0.42,"mobileIntensity":0.18,"verticalBeamOffset":0.2}' class="laserflow-hero laserflow-auth" aria-hidden="true"></div>
+
+    <a href="{{ route('landing') }}" class="auth-brand">
+        <span><i data-lucide="gem" class="h-6 w-6"></i></span>
+        Eventra
+    </a>
+
+    <form method="POST" action="{{ route('register.store') }}" class="auth-card auth-card-wide" data-reveal>
         @csrf
-        <div><label class="field-label">Name</label><input class="w-full" name="name" value="{{ old('name') }}" required></div>
-        <div><label class="field-label">Email</label><input class="w-full" name="email" type="email" value="{{ old('email') }}" required></div>
-        <div><label class="field-label">Phone</label><input class="w-full" name="phone" value="{{ old('phone') }}"></div>
-        <div><label class="field-label">Role</label><select class="w-full" name="role"><option value="planner">Planner</option><option value="vendor">Vendor</option><option value="guest">Guest</option></select></div>
-        <div><label class="field-label">Password</label><input class="w-full" name="password" type="password" required></div>
-        <div><label class="field-label">Confirm Password</label><input class="w-full" name="password_confirmation" type="password" required></div>
-        <div class="sm:col-span-2"><button class="btn-primary w-full magnetic">Create account</button></div>
+        <i data-lucide="sparkles" class="auth-mark"></i>
+        <h1>Create your Eventra account</h1>
+        <p>Choose a role and build your event workspace.</p>
+
+        <div class="auth-grid">
+            <div><label>Name</label><input name="name" value="{{ old('name') }}" placeholder="Your name" required></div>
+            <div><label>Email</label><input name="email" type="email" value="{{ old('email') }}" placeholder="name@work-email.com" required></div>
+            <div><label>Phone</label><input name="phone" value="{{ old('phone') }}" placeholder="+91 98765 43210"></div>
+            <div><label>Role</label><select name="role"><option value="planner">Planner</option><option value="vendor">Vendor</option><option value="guest">Guest</option></select></div>
+            <div><label>Password</label><input name="password" type="password" placeholder="Minimum 8 characters" required></div>
+            <div><label>Confirm Password</label><input name="password_confirmation" type="password" placeholder="Repeat password" required></div>
+        </div>
+
+        <button class="auth-submit magnetic" type="submit">Sign up</button>
+        <p class="auth-switch">Already have an account? <a href="{{ route('login') }}">Log in</a></p>
     </form>
 </section>
 @endsection
