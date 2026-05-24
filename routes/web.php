@@ -26,7 +26,7 @@ Route::post('/mail-debug/command', [MailTestController::class, 'runCommand'])->n
 
 // Guest RSVP Signed Route
 Route::get('/guests/rsvp/{event}/{guest}/{status}', function ($eventId, $guestId, $status) {
-    if (! request()->hasValidSignature()) {
+    if (!request()->hasValidSignature()) {
         abort(401, 'This link has expired or is invalid.');
     }
 
@@ -103,11 +103,17 @@ Route::middleware(['auth', 'jwt.session'])->group(function () {
     Route::get('/favorites', [VendorController::class, 'favorites'])->name('vendors.favorites');
     Route::get('/api/vendors/filter', [VendorController::class, 'apiFilter'])->name('api.vendors.filter');
 
-    // Messaging (all authenticated roles — planner & vendor)
-    Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/messages/conversations', [ChatController::class, 'conversationList'])->name('chat.conversations');
-    Route::get('/messages/{bookingId}', [ChatController::class, 'messages'])->name('chat.messages');
-    Route::post('/messages/{bookingId}', [ChatController::class, 'send'])->name('chat.send');
+    // Messaging (all authenticated roles — planner, vendor, guest)
+    Route::get('/messages', fn () => redirect()->route('chat.index'));
+    
+    Route::get('/threads', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/threads/conversations', [ChatController::class, 'conversationList'])->name('chat.conversations');
+    Route::get('/threads/search-guests', [ChatController::class, 'searchGuests'])->name('chat.search')->middleware('throttle:30,1');
+    Route::post('/threads/invite-guest', [ChatController::class, 'inviteGuest'])->name('chat.invite')->middleware('throttle:10,1');
+    Route::post('/threads/create-guest-thread', [ChatController::class, 'createGuestThread'])->name('chat.create-thread');
+    Route::post('/threads/{threadId}/read', [ChatController::class, 'markAsRead'])->name('chat.read');
+    Route::get('/threads/{threadId}/messages', [ChatController::class, 'messages'])->name('chat.messages');
+    Route::post('/threads/{threadId}/messages', [ChatController::class, 'send'])->name('chat.send');
 
     /* ── Planner Dashboard ── */
     Route::middleware('role:planner')->group(function () {
@@ -178,5 +184,6 @@ Route::middleware(['auth', 'jwt.session'])->group(function () {
     /* ── Guest Dashboard ── */
     Route::middleware('role:guest')->group(function () {
         Route::get('/guest-dashboard', [DashboardController::class, 'guest'])->name('guest.dashboard');
+        Route::post('/profile/become-planner', [ProfileController::class, 'becomePlanner'])->name('profile.become-planner');
     });
 });

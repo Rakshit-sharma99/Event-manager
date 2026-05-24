@@ -35,4 +35,17 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Profile updated.');
     }
+
+    /**
+     * Convert Guest -> Planner (1-click instant upgrade)
+     */
+    public function becomePlanner(Request $request)
+    {
+        $user = $request->user();
+        $user->role = 'planner';
+        $user->save();
+
+        return redirect('/planner-dashboard')
+            ->with('success', 'Welcome! Your planner account is ready.');
+    }
 }
