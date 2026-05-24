@@ -8,7 +8,7 @@ class EventRequest extends FormRequest
 {
     public function rules(): array
     {
-        return [
+        $rules = [
             'event_name' => ['required', 'string', 'max:120'],
             'category' => ['required', 'in:Wedding,Birthday,Corporate,Reception,Engagement,Concert'],
             'event_date' => ['required', 'date'],
@@ -21,5 +21,19 @@ class EventRequest extends FormRequest
             'status' => ['nullable', 'in:planning,confirmed,completed'],
             'banner' => ['nullable', 'image', 'max:4096'],
         ];
+
+        if ($this->isMethod('post')) {
+            $rules['event_date'][] = 'after_or_equal:today';
+        } else {
+            $id = $this->route('id');
+            if ($id) {
+                $event = \App\Models\Event::find($id);
+                if ($event && $this->input('event_date') !== optional($event->event_date)->format('Y-m-d')) {
+                    $rules['event_date'][] = 'after_or_equal:today';
+                }
+            }
+        }
+
+        return $rules;
     }
 }

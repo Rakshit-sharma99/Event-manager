@@ -1,14 +1,13 @@
-# Eventra — Luxury Wedding & Event Management Dashboard
+# Eventra Backend Workspace
 
-Eventra is a Laravel 11 + MongoDB Atlas event planning dashboard with role-based access for planners, vendors, and guests. It includes authentication, vendor discovery, event CRUD, guest RSVP management, budgets, bookings, timelines, task boards, gallery uploads, seeded demo data, and a premium animated Blade/Tailwind UI.
+Eventra is a Laravel 11 + MongoDB Atlas event planning application with role-based access for planners, vendors, and guests. The frontend has been reduced to a plain Blade interface so backend features can be built and tested first.
 
 ## Stack
 
 - Laravel 11
 - MongoDB Atlas via `mongodb/laravel-mongodb`
-- Blade + Tailwind CSS
-- Alpine.js, GSAP, Lenis, Chart.js, AOS, Lucide icons
-- Vite build pipeline
+- Plain Blade views
+- Minimal Vite assets for CSS and Axios bootstrap
 
 ## Setup
 
@@ -64,7 +63,7 @@ DB_DSN="mongodb+srv://USERNAME:PASSWORD@eventmanager.rbewk9i.mongodb.net/eventra
 
 ## Verification
 
-The current build was verified with:
+Useful backend checks:
 
 ```bash
 php artisan route:list

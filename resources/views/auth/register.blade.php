@@ -1,32 +1,57 @@
-@extends('layouts.guest', ['title' => 'Sign up - Eventra'])
+@extends('layouts.guest', ['title' => 'Register - Eventra'])
 @section('hide-nav', '1')
 
 @section('content')
 <section class="auth-stage">
-    <div data-laserflow='{"fogIntensity":0.2,"wispIntensity":5,"globalIntensity":0.42,"mobileIntensity":0.18,"verticalBeamOffset":0.2}' class="laserflow-hero laserflow-auth" aria-hidden="true"></div>
+    <a href="{{ route('landing') }}" class="auth-brand">Eventra</a>
 
-    <a href="{{ route('landing') }}" class="auth-brand">
-        <span><i data-lucide="gem" class="h-6 w-6"></i></span>
-        Eventra
-    </a>
-
-    <form method="POST" action="{{ route('register.store') }}" class="auth-card auth-card-wide" data-reveal>
+    <form method="POST" action="{{ route('register.store') }}" class="auth-card">
         @csrf
-        <i data-lucide="sparkles" class="auth-mark"></i>
-        <h1>Create your Eventra account</h1>
-        <p>Choose a role and build your event workspace.</p>
+        <h1>Create Account</h1>
 
         <div class="auth-grid">
-            <div><label>Name</label><input name="name" value="{{ old('name') }}" placeholder="Your name" required></div>
-            <div><label>Email</label><input name="email" type="email" value="{{ old('email') }}" placeholder="name@work-email.com" required></div>
-            <div><label>Phone</label><input name="phone" value="{{ old('phone') }}" placeholder="+91 98765 43210"></div>
-            <div><label>Role</label><select name="role"><option value="planner">Planner</option><option value="vendor">Vendor</option><option value="guest">Guest</option></select></div>
-            <div><label>Password</label><input name="password" type="password" placeholder="Minimum 8 characters" required></div>
-            <div><label>Confirm Password</label><input name="password_confirmation" type="password" placeholder="Repeat password" required></div>
+            <div>
+                <label>Full Name</label>
+                <input name="name" value="{{ old('name') }}" required placeholder="John Doe">
+                @error('name') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div>
+                <label>Email</label>
+                <input name="email" type="email" value="{{ old('email', request('email')) }}" required placeholder="you@example.com">
+                @error('email') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div>
+                <label>Residence / City</label>
+                <input name="residence" value="{{ old('residence') }}" placeholder="e.g. Mumbai">
+                @error('residence') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div>
+                <label>Phone Number</label>
+                <input name="phone_number" value="{{ old('phone_number') }}" placeholder="+91 98765 43210">
+                @error('phone_number') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div>
+                <label>I am a...</label>
+                <select name="role">
+                    <option value="planner" {{ old('role', request('role')) === 'planner' ? 'selected' : '' }}>Event Planner</option>
+                    <option value="vendor" {{ old('role', request('role')) === 'vendor' ? 'selected' : '' }}>Vendor</option>
+                    <option value="guest" {{ old('role', request('role')) === 'guest' ? 'selected' : '' }}>Guest</option>
+                </select>
+                @error('role') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div>
+                <label>Password</label>
+                <input name="password" type="password" required placeholder="Min 8 characters">
+                @error('password') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <label>Confirm Password</label>
+                <input name="password_confirmation" type="password" required placeholder="Re-enter password">
+            </div>
         </div>
 
-        <button class="auth-submit magnetic" type="submit">Sign up</button>
-        <p class="auth-switch">Already have an account? <a href="{{ route('login') }}">Log in</a></p>
+        <button class="auth-submit" type="submit">Sign up</button>
+        <p>Already registered? <a href="{{ route('login') }}">Login</a></p>
     </form>
 </section>
 @endsection

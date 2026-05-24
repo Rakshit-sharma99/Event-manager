@@ -17,21 +17,39 @@ class DashboardController extends Controller
         return view('landing');
     }
 
+    /**
+     * Dashboard router — redirects to role-specific dashboard.
+     */
     public function index(Request $request)
     {
         $user = $request->user();
-        $events = $user->role === 'planner'
-            ? Event::where('user_id', (string) $user->getKey())->orderBy('event_date')->get()
-            : Event::orderBy('event_date')->limit(6)->get();
-        $eventIds = $events->pluck('_id')->map(fn ($id) => (string) $id)->all();
+
+        return match ($user->role) {
+            'planner' => redirect()->route('planner.dashboard'),
+            'vendor' => redirect()->route('vendor.dashboard'),
+            'guest' => redirect()->route('guest.dashboard'),
+            default => redirect()->route('planner.dashboard'),
+        };
+    }
+
+    /**
+     * Planner dashboard (original dashboard logic).
+     */
+    public function planner(Request $request)
+    {
+        $user = $request->user();
+        $events = Event::where('user_id', (string) $user->getKey())
+            ->orderBy('event_date')
+            ->get();
+        $eventIds = $events->map(fn ($e) => (string) $e->getKey())->all();
 
         $stats = [
             'events' => $events->count(),
-            'guests' => Guest::whereIn('event_id', $eventIds)->count(),
-            'spent' => EventExpense::whereIn('event_id', $eventIds)->sum('amount'),
-            'tasks' => Task::whereIn('event_id', $eventIds)->where('status', '!=', 'done')->count(),
+            'guests' => $eventIds ? Guest::whereIn('event_id', $eventIds)->count() : 0,
+            'spent' => $eventIds ? EventExpense::whereIn('event_id', $eventIds)->sum('amount') : 0,
+            'tasks' => $eventIds ? Task::whereIn('event_id', $eventIds)->where('status', '!=', 'done')->count() : 0,
             'vendors' => Vendor::count(),
-            'bookings' => Booking::whereIn('event_id', $eventIds)->count(),
+            'bookings' => $eventIds ? Booking::whereIn('event_id', $eventIds)->count() : 0,
         ];
 
         $upcoming = $events->take(4);
@@ -40,6 +58,24 @@ class DashboardController extends Controller
             'value' => (int) $event->guest_count_expected,
         ])->values();
 
-        return view('dashboard.index', compact('user', 'events', 'stats', 'upcoming', 'chart'));
+        // Vendor categories for the Find Vendors section
+        $vendorCategories = Vendor::all()->pluck('category')->filter()->unique()->sort()->values();
+
+        return view('dashboard.planner', compact('user', 'events', 'stats', 'upcoming', 'chart', 'vendorCategories'));
+    }
+
+    /**
+     * Guest dashboard — shows events they are invited to and RSVP status.
+     */
+    public function guest(Request $request)
+    {
+        $user = $request->user();
+
+        // Find guest records matching the user's email
+        $guestRecords = Guest::where('email', $user->email)->get();
+        $eventIds = $guestRecords->pluck('event_id')->unique()->all();
+        $events = $eventIds ? Event::whereIn('_id', $eventIds)->get() : collect();
+
+        return view('dashboard.guest', compact('user', 'guestRecords', 'events'));
     }
 }

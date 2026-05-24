@@ -1,14 +1,21 @@
 @extends('layouts.guest', ['title' => 'Reset Password - Eventra'])
+@section('hide-nav', '1')
 
 @section('content')
-<section class="mx-auto grid min-h-[72vh] max-w-xl place-items-center px-5">
-    <form method="POST" action="{{ route('password.update') }}" class="glass-strong w-full rounded-[2rem] p-6" data-reveal>
+<section class="auth-stage">
+    <a href="{{ route('landing') }}" class="auth-brand">Eventra</a>
+
+    <form method="POST" action="{{ route('password.send-otp') }}" class="auth-card">
         @csrf
-        <h1 class="font-display mb-6 text-3xl font-bold">Reset password</h1>
-        <label class="field-label">Email</label><input class="mb-4 w-full" name="email" type="email" required>
-        <label class="field-label">New Password</label><input class="mb-4 w-full" name="password" type="password" required>
-        <label class="field-label">Confirm Password</label><input class="mb-5 w-full" name="password_confirmation" type="password" required>
-        <button class="btn-primary w-full">Update password</button>
+        <h1>Reset Password</h1>
+        <p class="plain-muted">Enter your email address and we'll send you a verification code.</p>
+
+        <label>Email</label>
+        <input name="email" type="email" value="{{ old('email') }}" required autofocus placeholder="you@example.com">
+        @error('email') <small class="otp-error">{{ $message }}</small> @enderror
+
+        <button class="auth-submit" type="submit" style="margin-top: 16px;">Send Verification Code</button>
+        <p style="margin-top: 12px;"><a href="{{ route('login') }}">Back to Login</a></p>
     </form>
 </section>
 @endsection

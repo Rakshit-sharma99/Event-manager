@@ -13,7 +13,19 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'email', 'max:120', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
             'role' => ['required', 'in:planner,vendor,guest'],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone_number' => ['nullable', 'string', 'max:30'],
+            'residence' => ['nullable', 'string', 'max:100'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Please enter your full name.',
+            'email.unique' => 'An account with this email already exists.',
+            'password.confirmed' => 'Password confirmation does not match.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'role.in' => 'Please select a valid role.',
         ];
     }
 }

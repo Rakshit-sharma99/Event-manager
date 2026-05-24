@@ -5,7 +5,7 @@
     @csrf
     <div class="glass-strong grid gap-4 rounded-[2rem] p-6 sm:grid-cols-2">
         <div class="sm:col-span-2"><label class="field-label">Vendor</label><select class="w-full" name="vendor_id">@foreach($vendors as $vendor)<option value="{{ $vendor->getKey() }}" @selected($selectedVendor && $selectedVendor->getKey()===$vendor->getKey())>{{ $vendor->business_name }} · {{ str($vendor->category)->headline() }}</option>@endforeach</select></div>
-        <div><label class="field-label">Date</label><input class="w-full" type="date" name="booking_date" value="{{ old('booking_date', optional($event->event_date)->format('Y-m-d')) }}" required></div>
+        <div><label class="field-label">Date</label><input class="w-full" type="date" name="booking_date" min="{{ now()->toDateString() }}" value="{{ old('booking_date', optional($event->event_date)->format('Y-m-d')) }}" required></div>
         <div><label class="field-label">Amount</label><input class="w-full" type="number" name="amount" value="{{ old('amount',$selectedVendor->price_min ?? 50000) }}" required></div>
         <div><label class="field-label">From</label><input class="w-full" type="time" name="booking_time_from" value="10:00" required></div>
         <div><label class="field-label">To</label><input class="w-full" type="time" name="booking_time_to" value="12:00" required></div>

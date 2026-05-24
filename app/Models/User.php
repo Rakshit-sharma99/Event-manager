@@ -14,22 +14,53 @@ class User extends Authenticatable
     protected $collection = 'users';
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'phone', 'avatar', 'profile_complete',
-        'verification_token', 'email_verified_at', 'jwt_token',
+        'name', 'email', 'password', 'role', 'phone', 'phone_number', 'residence',
+        'avatar', 'profile_complete',
+        'email_verified_at', 'jwt_token',
+        // OTP fields
+        'otp', 'otp_expires_at', 'otp_attempts', 'otp_resend_count', 'otp_last_resent_at',
     ];
 
     protected $hidden = [
-        'password', 'remember_token', 'jwt_token',
+        'password', 'remember_token', 'jwt_token', 'otp',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'otp_expires_at' => 'datetime',
+            'otp_last_resent_at' => 'datetime',
             'password' => 'hashed',
             'profile_complete' => 'boolean',
+            'otp_attempts' => 'integer',
+            'otp_resend_count' => 'integer',
         ];
     }
+
+    /* ── Helpers ─────────────────────────────────── */
+
+    public function isVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function isPlanner(): bool
+    {
+        return $this->role === 'planner';
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->role === 'vendor';
+    }
+
+    public function isGuest(): bool
+    {
+        return $this->role === 'guest';
+    }
+
+    /* ── Relationships ───────────────────────────── */
 
     public function profile()
     {
@@ -49,10 +80,5 @@ class User extends Authenticatable
     public function favorites()
     {
         return $this->hasMany(Favorite::class, 'user_id');
-    }
-
-    public function isPlanner(): bool
-    {
-        return $this->role === 'planner';
     }
 }

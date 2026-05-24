@@ -13,8 +13,20 @@ class JwtSessionMiddleware
     {
         $token = session('jwt_token') ?: str($request->bearerToken())->toString();
 
-        abort_unless($token && app(JwtService::class)->verify($token), 401);
+        if ($token && app(JwtService::class)->verify($token)) {
+            return $next($request);
+        }
 
-        return $next($request);
+        // If JWT is missing/expired, but the user is authenticated under Laravel web auth:
+        if (auth()->check()) {
+            $user = auth()->user();
+            $newToken = app(JwtService::class)->issue($user);
+            $user->update(['jwt_token' => $newToken]);
+            session(['jwt_token' => $newToken]);
+
+            return $next($request);
+        }
+
+        abort(401);
     }
 }

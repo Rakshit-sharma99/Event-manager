@@ -14,7 +14,7 @@ return new class extends Migration
             'users', 'profiles', 'events', 'event_budgets', 'event_expenses',
             'vendors', 'vendor_ratings', 'favorites', 'guests', 'guest_responses',
             'bookings', 'booking_histories', 'tasks', 'galleries', 'notifications',
-            'audit_logs',
+            'audit_logs', 'jobs', 'failed_jobs', 'job_batches',
         ] as $collection) {
             if (! in_array($collection, $existing, true)) {
                 $db->createCollection($collection);
@@ -43,6 +43,7 @@ return new class extends Migration
             'audit_logs', 'notifications', 'galleries', 'tasks', 'booking_histories',
             'bookings', 'guest_responses', 'guests', 'favorites', 'vendor_ratings',
             'vendors', 'event_expenses', 'event_budgets', 'events', 'profiles', 'users',
+            'jobs', 'failed_jobs', 'job_batches',
         ] as $collection) {
             try {
                 $db->dropCollection($collection);

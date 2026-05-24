@@ -104,11 +104,14 @@ class GuestController extends Controller
 
     public function sendInvite(Request $request, string $eventId, string $guestId)
     {
-        $this->ownEvent($request, $eventId);
+        $event = $this->ownEvent($request, $eventId);
         $guest = Guest::where('_id', $guestId)->where('event_id', $eventId)->firstOrFail();
         $guest->update(['invite_token' => $guest->invite_token ?: Str::random(48), 'invite_sent_at' => now()]);
 
-        return back()->with('success', 'Invite link generated.')->with('invite_link', route('rsvp.show', $guest->invite_token));
+        // Actually send the direct invitation email via MailService
+        app(\App\Services\MailService::class)->sendGuestInvitation($guest, $event);
+
+        return back()->with('success', 'Invitation email sent directly to ' . $guest->email);
     }
 
     public function publicRsvp(string $token)

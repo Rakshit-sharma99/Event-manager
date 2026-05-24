@@ -20,6 +20,16 @@ class Event extends BaseModel
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function getTitleAttribute()
+    {
+        return $this->event_name;
+    }
+
     public function budgets()
     {
         return $this->hasMany(EventBudget::class, 'event_id');

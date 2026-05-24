@@ -10,7 +10,7 @@ class BookingRequest extends FormRequest
     {
         return [
             'vendor_id' => ['required', 'string'],
-            'booking_date' => ['required', 'date'],
+            'booking_date' => ['required', 'date', 'after_or_equal:today'],
             'booking_time_from' => ['required', 'date_format:H:i'],
             'booking_time_to' => ['required', 'date_format:H:i', 'after:booking_time_from'],
             'amount' => ['required', 'numeric', 'min:1'],

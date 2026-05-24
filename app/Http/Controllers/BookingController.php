@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\BookingHistory;
+use App\Models\ChatMessage;
 use App\Models\Event;
 use App\Models\EventExpense;
 use App\Models\Vendor;
@@ -137,6 +138,60 @@ class BookingController extends Controller
         }
 
         return $conflicts;
+    }
+
+    /**
+     * Get chat messages for a booking (planner side, AJAX polling).
+     */
+    public function chatMessages(Request $request, string $eventId, string $bookingId)
+    {
+        $this->ownEvent($request, $eventId);
+        $booking = Booking::where('_id', $bookingId)->where('event_id', $eventId)->firstOrFail();
+
+        $user = $request->user();
+        $messages = ChatMessage::where('booking_id', $bookingId)
+            ->orderBy('created_at')
+            ->get()
+            ->map(fn ($msg) => [
+                'id' => (string) $msg->getKey(),
+                'sender_name' => $msg->sender_name,
+                'sender_role' => $msg->sender_role,
+                'message' => $msg->message,
+                'time' => $msg->created_at?->format('M d, g:i A') ?? now()->format('M d, g:i A'),
+                'is_mine' => $msg->sender_id === (string) $user->getKey(),
+            ]);
+
+        return response()->json($messages);
+    }
+
+    /**
+     * Send a chat message from planner side.
+     */
+    public function sendMessage(Request $request, string $eventId, string $bookingId)
+    {
+        $this->ownEvent($request, $eventId);
+        $booking = Booking::where('_id', $bookingId)->where('event_id', $eventId)->firstOrFail();
+
+        $data = $request->validate([
+            'message' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $user = $request->user();
+
+        // Set status to negotiating if it was pending
+        if ($booking->status === 'pending') {
+            $booking->update(['status' => 'negotiating']);
+        }
+
+        ChatMessage::create([
+            'booking_id' => $bookingId,
+            'sender_id' => (string) $user->getKey(),
+            'sender_name' => $user->name,
+            'sender_role' => 'planner',
+            'message' => $data['message'],
+        ]);
+
+        return response()->json(['ok' => true]);
     }
 
     private function ownEvent(Request $request, string $id): Event

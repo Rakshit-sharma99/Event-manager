@@ -11,9 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->redirectTo(
+            guests: '/login',
+            users: '/dashboard'
+        );
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'jwt.session' => \App\Http\Middleware\JwtSessionMiddleware::class,
+            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'no-cache' => \App\Http\Middleware\NoCacheMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
