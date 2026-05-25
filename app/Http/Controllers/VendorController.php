@@ -54,7 +54,7 @@ class VendorController extends Controller
 
     private function filtered(Request $request)
     {
-        $query = Vendor::query();
+        $query = Vendor::verified();
 
         if ($request->filled('q')) {
             $q = $request->q;

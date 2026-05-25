@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use MongoDB\Laravel\Eloquent\SoftDeletes;
+
 class Event extends BaseModel
 {
+    use SoftDeletes;
+
     protected $collection = 'events';
 
     protected function casts(): array
     {
         return [
             'event_date' => 'date',
+            'event_end_date' => 'date',
             'guest_count_expected' => 'integer',
             'total_budget' => 'float',
         ];
@@ -88,5 +93,32 @@ class Event extends BaseModel
 
         // Stunning default high-res cover placeholder
         return 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80';
+    }
+
+    /**
+     * Get event date range formatted cleanly.
+     */
+    public function getEventDateRangeAttribute(): string
+    {
+        $start = $this->event_date;
+        $end = $this->event_end_date;
+
+        if (!$start) {
+            return '';
+        }
+
+        if (!$end || $start->equalTo($end)) {
+            return $start->format('M d, Y');
+        }
+
+        // Format dates beautifully
+        if ($start->format('Y') === $end->format('Y')) {
+            if ($start->format('M') === $end->format('M')) {
+                return $start->format('M d') . ' - ' . $end->format('d, Y');
+            }
+            return $start->format('M d') . ' - ' . $end->format('M d, Y');
+        }
+
+        return $start->format('M d, Y') . ' - ' . $end->format('M d, Y');
     }
 }

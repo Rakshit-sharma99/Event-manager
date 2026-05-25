@@ -19,7 +19,7 @@
                 <h3 class="font-display text-2xl font-bold">{{ $event->event_name }}</h3>
                 <p class="mt-2 text-sm text-white/55"><i data-lucide="map-pin" class="mr-1 inline h-4 w-4"></i>{{ $event->venue_name }} · {{ $event->location }}</p>
                 <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
-                    <div class="rounded-2xl bg-white/[.04] p-3"><p class="text-white/45">Date</p><b>{{ optional($event->event_date)->format('M d, Y') }}</b></div>
+                    <div class="rounded-2xl bg-white/[.04] p-3"><p class="text-white/45">Date</p><b>{{ $event->event_date_range }}</b></div>
                     <div class="rounded-2xl bg-white/[.04] p-3"><p class="text-white/45">Budget</p><b>₹{{ number_format($event->total_budget) }}</b></div>
                 </div>
                 <div class="mt-5 flex gap-3"><a class="btn-primary flex-1 !py-2" href="{{ route('events.show',$event) }}">Open</a><a class="btn-ghost !py-2" href="{{ route('events.edit',$event) }}"><i data-lucide="pencil" class="h-4 w-4"></i></a></div>

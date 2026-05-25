@@ -8,7 +8,8 @@
         <div class="sm:col-span-2"><label class="field-label">Event name</label><input class="w-full" name="event_name" value="{{ old('event_name',$event->event_name) }}" required></div>
         <div><label class="field-label">Category</label><select class="w-full" name="category">@foreach(['Wedding','Birthday','Corporate','Reception','Engagement','Concert'] as $cat)<option @selected(old('category',$event->category)===$cat)>{{ $cat }}</option>@endforeach</select></div>
         <div><label class="field-label">Status</label><select class="w-full" name="status">@foreach(['planning','confirmed','completed'] as $status)<option value="{{ $status }}" @selected(old('status',$event->status)===$status)>{{ ucfirst($status) }}</option>@endforeach</select></div>
-        <div><label class="field-label">Date</label><input class="w-full" name="event_date" type="date" min="{{ now()->toDateString() }}" value="{{ old('event_date', optional($event->event_date)->format('Y-m-d')) }}" required></div>
+        <div><label class="field-label">Start Date</label><input class="w-full" name="event_date" type="date" min="{{ now()->toDateString() }}" value="{{ old('event_date', optional($event->event_date)->format('Y-m-d')) }}" required></div>
+        <div><label class="field-label">End Date (Optional)</label><input class="w-full" name="event_end_date" type="date" min="{{ now()->toDateString() }}" value="{{ old('event_end_date', optional($event->event_end_date)->format('Y-m-d')) }}"></div>
         <div><label class="field-label">Time</label><input class="w-full" name="event_time" type="time" value="{{ old('event_time',$event->event_time ?? '18:30') }}" required></div>
         <div><label class="field-label">Location</label><input class="w-full" name="location" value="{{ old('location',$event->location) }}" required></div>
         <div><label class="field-label">Venue</label><input class="w-full" name="venue_name" value="{{ old('venue_name',$event->venue_name) }}"></div>

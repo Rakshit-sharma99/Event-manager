@@ -74,7 +74,16 @@ class MediaController extends Controller
     public function uploadVendorGallery(Request $request)
     {
         $user = $request->user();
-        $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+        $activeBusinessId = $request->session()->get('active_business_id');
+        $vendor = null;
+        if ($activeBusinessId) {
+            $vendor = Vendor::where('_id', $activeBusinessId)
+                ->where('user_id', (string) $user->getKey())
+                ->first();
+        }
+        if (!$vendor) {
+            $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+        }
 
         if (!$vendor) {
             return response()->json(['error' => 'Vendor profile not found.'], 404);
@@ -124,7 +133,16 @@ class MediaController extends Controller
     public function deleteVendorGallery(Request $request, string $id)
     {
         $user = $request->user();
-        $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+        $activeBusinessId = $request->session()->get('active_business_id');
+        $vendor = null;
+        if ($activeBusinessId) {
+            $vendor = Vendor::where('_id', $activeBusinessId)
+                ->where('user_id', (string) $user->getKey())
+                ->first();
+        }
+        if (!$vendor) {
+            $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+        }
 
         if (!$vendor) {
             return response()->json(['error' => 'Vendor profile not found.'], 404);

@@ -56,6 +56,12 @@ class AuthController extends Controller
                 'category'  => $request->vendor_category,
                 'location'  => $request->residence ?? '',
                 'base_location' => $request->residence ?? '',
+                // Verification defaults — vendor must be approved by admin
+                'verification_status' => 'pending',
+                'is_verified' => false,
+                'is_active' => false,
+                'rating' => 0,
+                'total_reviews' => 0,
             ]);
         }
 

@@ -14,6 +14,9 @@ trait HasAvatar
         // For User model
         if ($this->table === 'users' || $this->collection === 'users') {
             if ($this->profile_photo) {
+                if (str_starts_with($this->profile_photo, 'http://') || str_starts_with($this->profile_photo, 'https://')) {
+                    return $this->profile_photo;
+                }
                 return asset('storage/' . $this->profile_photo);
             }
             if ($this->avatar && (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://'))) {

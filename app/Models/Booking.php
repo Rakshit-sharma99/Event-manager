@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use MongoDB\Laravel\Eloquent\SoftDeletes;
+
 class Booking extends BaseModel
 {
+    use SoftDeletes;
+
     protected $collection = 'bookings';
 
     protected function casts(): array

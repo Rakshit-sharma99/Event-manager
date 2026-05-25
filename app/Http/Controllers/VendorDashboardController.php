@@ -16,12 +16,38 @@ class VendorDashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+        $businesses = Vendor::where('user_id', (string) $user->getKey())->get();
+
+        $vendor = null;
+        $activeBusinessId = $request->query('business_id');
+        if ($activeBusinessId === 'new') {
+            // Explicitly creating a new business
+            $vendor = null;
+        } elseif ($activeBusinessId) {
+            $vendor = $businesses->firstWhere('_id', $activeBusinessId);
+            if ($vendor) {
+                $request->session()->put('active_business_id', (string) $vendor->getKey());
+            }
+        }
+
+        if (!$vendor && $activeBusinessId !== 'new') {
+            $sessionBusinessId = $request->session()->get('active_business_id');
+            if ($sessionBusinessId) {
+                $vendor = $businesses->firstWhere('_id', $sessionBusinessId);
+            }
+        }
+
+        if (!$vendor && $activeBusinessId !== 'new') {
+            $vendor = $businesses->first();
+            if ($vendor) {
+                $request->session()->put('active_business_id', (string) $vendor->getKey());
+            }
+        }
 
         $stats = [
             'bookings' => $vendor ? $vendor->bookings()->count() : 0,
-            'rating' => $vendor->rating ?? 0,
-            'reviews' => $vendor->total_reviews ?? 0,
+            'rating' => $vendor ? ($vendor->rating ?? 0) : 0,
+            'reviews' => $vendor ? ($vendor->total_reviews ?? 0) : 0,
         ];
 
         // Fetch all booking requests for this vendor
@@ -38,7 +64,7 @@ class VendorDashboardController extends Controller
             }
         }
 
-        return view('vendors.dashboard.index', compact('user', 'vendor', 'stats', 'bookingRequests'));
+        return view('vendors.dashboard.index', compact('user', 'vendor', 'businesses', 'stats', 'bookingRequests'));
     }
 
     /**
@@ -47,10 +73,9 @@ class VendorDashboardController extends Controller
     public function respondBooking(Request $request, string $bookingId)
     {
         $user = $request->user();
-        $vendor = Vendor::where('user_id', (string) $user->getKey())->firstOrFail();
-
-        $booking = Booking::where('_id', $bookingId)
-            ->where('vendor_id', (string) $vendor->getKey())
+        $booking = Booking::findOrFail($bookingId);
+        $vendor = Vendor::where('_id', $booking->vendor_id)
+            ->where('user_id', (string) $user->getKey())
             ->firstOrFail();
 
         $data = $request->validate([
@@ -75,10 +100,9 @@ class VendorDashboardController extends Controller
     public function chatMessages(Request $request, string $bookingId)
     {
         $user = $request->user();
-        $vendor = Vendor::where('user_id', (string) $user->getKey())->firstOrFail();
-
-        $booking = Booking::where('_id', $bookingId)
-            ->where('vendor_id', (string) $vendor->getKey())
+        $booking = Booking::findOrFail($bookingId);
+        $vendor = Vendor::where('_id', $booking->vendor_id)
+            ->where('user_id', (string) $user->getKey())
             ->firstOrFail();
 
         $messages = ChatMessage::where('booking_id', $bookingId)
@@ -102,10 +126,9 @@ class VendorDashboardController extends Controller
     public function sendMessage(Request $request, string $bookingId)
     {
         $user = $request->user();
-        $vendor = Vendor::where('user_id', (string) $user->getKey())->firstOrFail();
-
-        $booking = Booking::where('_id', $bookingId)
-            ->where('vendor_id', (string) $vendor->getKey())
+        $booking = Booking::findOrFail($bookingId);
+        $vendor = Vendor::where('_id', $booking->vendor_id)
+            ->where('user_id', (string) $user->getKey())
             ->firstOrFail();
 
         $data = $request->validate([
@@ -134,6 +157,7 @@ class VendorDashboardController extends Controller
     public function updateProfile(Request $request)
     {
         $data = $request->validate([
+            'vendor_id' => ['nullable', 'string'],
             'name' => ['required', 'string', 'max:80'],
             'business_name' => ['required', 'string', 'max:120'],
             'base_location' => ['required', 'string', 'max:100'],
@@ -149,6 +173,7 @@ class VendorDashboardController extends Controller
         ]);
 
         $user = $request->user();
+        $vendorId = $request->input('vendor_id');
 
         // Convert comma-separated services to array
         $services = [];
@@ -157,28 +182,43 @@ class VendorDashboardController extends Controller
             $services = array_filter($services);
         }
 
-        Vendor::updateOrCreate(
-            ['user_id' => (string) $user->getKey()],
-            [
-                'name' => $data['name'],
-                'business_name' => $data['business_name'],
-                'base_location' => $data['base_location'],
-                'work_location' => $data['work_location'],
-                'budget_min' => $data['budget_min'] ?? 0,
-                'budget_max' => $data['budget_max'] ?? 0,
-                'speciality' => $data['speciality'],
-                'services_provided' => array_values($services),
-                'description' => $data['description'] ?? '',
-                'contact_number' => $data['contact_number'] ?? '',
-                'contact_email' => $data['contact_email'],
-                'portfolio_images' => [], // future-ready
-                // Category from dropdown, speciality is free-text sub-specialty
-                'category' => $data['vendor_category'],
-                'location' => $data['base_location'],
-                'price_min' => $data['budget_min'] ?? 0,
-                'price_max' => $data['budget_max'] ?? 0,
-            ]
-        );
+        $vendorData = [
+            'user_id' => (string) $user->getKey(),
+            'name' => $data['name'],
+            'business_name' => $data['business_name'],
+            'base_location' => $data['base_location'],
+            'work_location' => $data['work_location'],
+            'budget_min' => $data['budget_min'] ?? 0,
+            'budget_max' => $data['budget_max'] ?? 0,
+            'speciality' => $data['speciality'],
+            'services_provided' => array_values($services),
+            'description' => $data['description'] ?? '',
+            'contact_number' => $data['contact_number'] ?? '',
+            'contact_email' => $data['contact_email'],
+            // Category from dropdown, speciality is free-text sub-specialty
+            'category' => $data['vendor_category'],
+            'location' => $data['base_location'],
+            'price_min' => $data['budget_min'] ?? 0,
+            'price_max' => $data['budget_max'] ?? 0,
+        ];
+
+        if ($vendorId && $vendorId !== 'new') {
+            $vendor = Vendor::where('_id', $vendorId)->where('user_id', (string) $user->getKey())->firstOrFail();
+            $vendor->update($vendorData);
+        } else {
+            // Force dynamic image path initialization if needed, and default ratings
+            $vendorData['portfolio_images'] = [];
+            $vendorData['rating'] = 0;
+            $vendorData['total_reviews'] = 0;
+            // Verification defaults — new businesses require admin approval
+            $vendorData['verification_status'] = 'pending';
+            $vendorData['is_verified'] = false;
+            $vendorData['is_active'] = false;
+            $vendor = Vendor::create($vendorData);
+        }
+
+        // Set the active business in the session
+        $request->session()->put('active_business_id', (string) $vendor->getKey());
 
         return back()->with('success', 'Vendor profile updated successfully!');
     }

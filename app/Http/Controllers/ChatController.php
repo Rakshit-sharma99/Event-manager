@@ -125,7 +125,26 @@ class ChatController extends Controller
         $senderRole = $user->role;
 
         if ($user->role === 'vendor') {
-            $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+            $vendor = null;
+            if ($thread->booking_id) {
+                $booking = $thread->booking;
+                if ($booking) {
+                    $vendor = Vendor::where('_id', $booking->vendor_id)
+                        ->where('user_id', (string) $user->getKey())
+                        ->first();
+                }
+            }
+            if (!$vendor) {
+                $activeBusinessId = $request->session()->get('active_business_id');
+                if ($activeBusinessId) {
+                    $vendor = Vendor::where('_id', $activeBusinessId)
+                        ->where('user_id', (string) $user->getKey())
+                        ->first();
+                }
+            }
+            if (!$vendor) {
+                $vendor = Vendor::where('user_id', (string) $user->getKey())->first();
+            }
             $senderName = $vendor->business_name ?? $user->name;
         }
 
@@ -316,7 +335,14 @@ class ChatController extends Controller
         $conversations = [];
 
         if ($user->role === 'vendor') {
-            $vendor = Vendor::where('user_id', $userId)->first();
+            $activeBusinessId = session('active_business_id');
+            $vendor = null;
+            if ($activeBusinessId) {
+                $vendor = Vendor::where('_id', $activeBusinessId)->where('user_id', $userId)->first();
+            }
+            if (!$vendor) {
+                $vendor = Vendor::where('user_id', $userId)->first();
+            }
             if (!$vendor) return [];
 
             $bookings = Booking::where('vendor_id', (string) $vendor->getKey())
@@ -582,8 +608,8 @@ class ChatController extends Controller
         if ($user->role === 'planner') {
             abort_unless($thread->planner_id === $userId, 403);
         } elseif ($user->role === 'vendor') {
-            $vendor = Vendor::where('user_id', $userId)->firstOrFail();
-            abort_unless($thread->vendor_id === (string) $vendor->getKey(), 403);
+            $ownsVendor = Vendor::where('_id', $thread->vendor_id)->where('user_id', $userId)->exists();
+            abort_unless($ownsVendor, 403);
         } elseif ($user->role === 'guest') {
             $guest = Guest::findOrFail($thread->guest_id);
             abort_unless(strtolower($guest->email) === strtolower($user->email), 403);

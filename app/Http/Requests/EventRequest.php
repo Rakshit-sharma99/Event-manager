@@ -22,6 +22,7 @@ class EventRequest extends FormRequest
             'status' => ['nullable', 'in:planning,confirmed,completed'],
             'banner' => ['nullable', 'image', 'max:4096'],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'event_end_date' => ['nullable', 'date', 'after_or_equal:event_date'],
         ];
 
         if ($this->isMethod('post')) {

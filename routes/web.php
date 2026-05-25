@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\ChatController;
@@ -13,8 +14,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\VendorDashboardController;
+use App\Http\Controllers\VendorDocumentController;
 use App\Http\Controllers\SmartBudgetController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminVendorController;
+use App\Http\Controllers\AdminEventController;
+use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'landing'])->name('landing');
@@ -66,7 +73,10 @@ Route::middleware(['guest', 'no-cache'])->group(function () {
     Route::post('/reset-password/verify', [AuthController::class, 'verifyResetOtp'])->name('password.verify-otp.submit');
     Route::post('/reset-password/resend', [AuthController::class, 'resendResetOtp'])->name('password.resend-otp');
     Route::get('/reset-password/new', [AuthController::class, 'showNewPasswordForm'])->name('password.new-password');
-    Route::post('/reset-password/new', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+    Route::get('/auth/google/role', [GoogleController::class, 'showRoleSelect'])->name('google.role-select');
+    Route::post('/auth/google/complete-register', [GoogleController::class, 'completeRegistration'])->name('google.register.complete');
 });
 
 /* ================================================================
@@ -196,6 +206,11 @@ Route::middleware(['auth', 'jwt.session'])->group(function () {
         Route::post('/vendor-bookings/{bookingId}/respond', [VendorDashboardController::class, 'respondBooking'])->name('vendor.booking.respond');
         Route::get('/vendor-bookings/{bookingId}/messages', [VendorDashboardController::class, 'chatMessages'])->name('vendor.booking.messages');
         Route::post('/vendor-bookings/{bookingId}/messages', [VendorDashboardController::class, 'sendMessage'])->name('vendor.booking.messages.send');
+
+        // Vendor document upload & verification
+        Route::get('/vendor-documents', [VendorDocumentController::class, 'index'])->name('vendor.documents');
+        Route::post('/vendor-documents', [VendorDocumentController::class, 'upload'])->name('vendor.documents.upload')->middleware('throttle:20,1');
+        Route::post('/vendor-documents/submit', [VendorDocumentController::class, 'submitForReview'])->name('vendor.documents.submit');
     });
 
     /* ── Guest Dashboard ── */
@@ -203,4 +218,40 @@ Route::middleware(['auth', 'jwt.session'])->group(function () {
         Route::get('/guest-dashboard', [DashboardController::class, 'guest'])->name('guest.dashboard');
         Route::post('/profile/become-planner', [ProfileController::class, 'becomePlanner'])->name('profile.become-planner');
     });
+});
+
+/* ================================================================
+ *  ADMIN PANEL — requires auth + admin role
+ * ================================================================ */
+Route::middleware(['auth', 'jwt.session', 'role:admin', 'throttle:120,1'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard & Analytics
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/api/analytics', [AdminController::class, 'analyticsJson'])->name('api.analytics');
+
+    // Vendor Verification
+    Route::get('/vendor-verifications', [AdminVendorController::class, 'verifications'])->name('vendor-verifications');
+
+    // All Vendors
+    Route::get('/vendors', [AdminVendorController::class, 'index'])->name('vendors');
+    Route::get('/vendors/{id}', [AdminVendorController::class, 'show'])->name('vendors.show');
+    Route::post('/vendors/{id}/approve', [AdminVendorController::class, 'approve'])->name('vendors.approve');
+    Route::post('/vendors/{id}/reject', [AdminVendorController::class, 'reject'])->name('vendors.reject');
+    Route::post('/vendors/{id}/suspend', [AdminVendorController::class, 'suspend'])->name('vendors.suspend');
+    Route::post('/vendors/{id}/activate', [AdminVendorController::class, 'activate'])->name('vendors.activate');
+    Route::get('/vendors/{vendorId}/documents/{docId}', [AdminVendorController::class, 'viewDocument'])->name('vendors.document');
+
+    // Events
+    Route::get('/events', [AdminEventController::class, 'index'])->name('events');
+    Route::get('/events/{id}', [AdminEventController::class, 'show'])->name('events.show');
+    Route::post('/events/{id}/suspend', [AdminEventController::class, 'suspend'])->name('events.suspend');
+
+    // Bookings
+    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings');
+
+    // Users
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users');
+    Route::post('/users/{id}/suspend', [AdminUserController::class, 'suspend'])->name('users.suspend');
+    Route::post('/users/{id}/ban', [AdminUserController::class, 'ban'])->name('users.ban');
+    Route::post('/users/{id}/activate', [AdminUserController::class, 'activate'])->name('users.activate');
 });

@@ -28,6 +28,7 @@ class DashboardController extends Controller
             'planner' => redirect()->route('planner.dashboard'),
             'vendor' => redirect()->route('vendor.dashboard'),
             'guest' => redirect()->route('guest.dashboard'),
+            'admin' => redirect()->route('admin.dashboard'),
             default => redirect()->route('planner.dashboard'),
         };
     }

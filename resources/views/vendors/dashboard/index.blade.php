@@ -7,6 +7,86 @@
     <p class="plain-muted">Manage your vendor profile and business details below.</p>
 </section>
 
+<!-- Business Switcher Panel -->
+<section class="plain-section" style="margin-bottom: 24px;">
+    <div class="glass-strong rounded-[2rem] p-6" style="border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <h3 class="font-display text-2xl font-bold" style="margin: 0; color: #fff;">Your Businesses</h3>
+                <p class="text-sm text-white/55" style="margin: 4px 0 0 0;">Switch between your active business profiles or add a new one.</p>
+            </div>
+            <a href="{{ route('vendor.dashboard', ['business_id' => 'new']) }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 10px 20px; font-size: 0.9rem; border-radius: 9999px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline-block; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Register New Business
+            </a>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
+            @forelse($businesses as $biz)
+                @php
+                    $isActive = $vendor && (string)$vendor->getKey() === (string)$biz->getKey();
+                @endphp
+                <a href="{{ route('vendor.dashboard', ['business_id' => (string)$biz->getKey()]) }}" style="text-decoration: none; display: block;">
+                    <div style="
+                        border: 1px solid {{ $isActive ? 'rgba(0, 128, 105, 0.4)' : 'rgba(255, 255, 255, 0.08)' }}; 
+                        background: {{ $isActive ? 'rgba(0, 128, 105, 0.08)' : 'rgba(255, 255, 255, 0.03)' }}; 
+                        border-radius: 20px; 
+                        padding: 16px; 
+                        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                        cursor: pointer;
+                        position: relative;
+                        overflow: hidden;
+                    " 
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='{{ $isActive ? 'rgba(0, 128, 105, 0.6)' : 'rgba(255, 255, 255, 0.15)' }}'; this.style.background='{{ $isActive ? 'rgba(0, 128, 105, 0.12)' : 'rgba(255, 255, 255, 0.06)' }}';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='{{ $isActive ? 'rgba(0, 128, 105, 0.4)' : 'rgba(255, 255, 255, 0.08)' }}'; this.style.background='{{ $isActive ? 'rgba(0, 128, 105, 0.08)' : 'rgba(255, 255, 255, 0.03)' }}';">
+                        
+                        @if($isActive)
+                            <div style="position: absolute; top: 0; right: 0; background: #008069; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 12px; border-bottom-left-radius: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Active
+                            </div>
+                        @endif
+
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="
+                                width: 44px; 
+                                height: 44px; 
+                                border-radius: 12px; 
+                                background: {{ $isActive ? 'rgba(0, 128, 105, 0.2)' : 'rgba(255, 255, 255, 0.05)' }}; 
+                                display: flex; 
+                                align-items: center; 
+                                justify-content: center;
+                                font-size: 1.25rem;
+                            ">
+                                @if($biz->category === 'catering') 🍽️
+                                @elseif($biz->category === 'photography') 📸
+                                @elseif($biz->category === 'decoration') 🌸
+                                @elseif($biz->category === 'music') 🎵
+                                @elseif($biz->category === 'florist') 💐
+                                @elseif($biz->category === 'venue') 🏰
+                                @else 💼
+                                @endif
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 style="margin: 0; font-weight: 700; font-size: 1.05rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 40px; text-align: left;">
+                                    {{ $biz->business_name }}
+                                </h4>
+                                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: rgba(255, 255, 255, 0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left;">
+                                    {{ ucfirst($biz->category) }} &middot; {{ $biz->base_location }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            @empty
+                <div style="grid-column: 1 / -1; text-align: center; padding: 24px; color: rgba(255, 255, 255, 0.4); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 20px;">
+                    <p style="margin: 0 0 8px 0; font-size: 1rem; font-weight: 600;">No businesses registered yet.</p>
+                    <p style="margin: 0; font-size: 0.85rem;">Click "Register New Business" to list your first service profile.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
 <!-- Stats -->
 <section class="mobile-safe-grid plain-section">
     @foreach([
@@ -208,11 +288,12 @@ function escHtml(s) {
 <!-- Vendor Profile Form -->
 <section class="plain-section">
     <div class="panel" style="padding: 24px;">
-        <h3>Business Profile</h3>
-        <p class="plain-muted">Fill in your business details. This information will be visible to event planners.</p>
+        <h3>{{ $vendor ? 'Edit Business Profile: ' . $vendor->business_name : 'Register New Business Profile' }}</h3>
+        <p class="plain-muted">{{ $vendor ? 'Update details for your selected business. This will instantly refresh your showcase and bookings portal.' : 'Enter details to register another business profile under your account.' }}</p>
 
         <form method="POST" action="{{ route('vendor.dashboard.update') }}">
             @csrf
+            <input type="hidden" name="vendor_id" value="{{ $vendor ? (string)$vendor->getKey() : 'new' }}">
 
             <div class="auth-grid">
                 <div>

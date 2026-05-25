@@ -8,7 +8,7 @@
     <p>
         {{ $event->venue_name }} -
         {{ $event->location }} -
-        {{ optional($event->event_date)->format('M d, Y') }} at {{ $event->event_time }}
+        {{ $event->event_date_range }} at {{ $event->event_time }}
     </p>
     <div class="plain-actions">
         <a class="btn-primary" href="{{ route('guests.index', $event) }}">Guests</a>
