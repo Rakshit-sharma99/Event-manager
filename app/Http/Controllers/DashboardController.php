@@ -62,7 +62,18 @@ class DashboardController extends Controller
         // Vendor categories for the Find Vendors section
         $vendorCategories = Vendor::all()->pluck('category')->filter()->unique()->sort()->values();
 
-        return view('dashboard.planner', compact('user', 'events', 'stats', 'upcoming', 'chart', 'vendorCategories'));
+        // Resolve active event for dashboard quick links
+        $activeEvent = null;
+        if (session('active_event_id')) {
+            $activeEvent = Event::where('_id', session('active_event_id'))
+                ->where('user_id', (string) $user->getKey())
+                ->first();
+        }
+        if (!$activeEvent) {
+            $activeEvent = $events->first();
+        }
+
+        return view('dashboard.planner', compact('user', 'events', 'stats', 'upcoming', 'chart', 'vendorCategories', 'activeEvent'));
     }
 
     /**

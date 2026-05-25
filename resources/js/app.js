@@ -1,1 +1,247 @@
+/* ================================================================
+ *  Eventra — Main JavaScript
+ *  Alpine.js + GSAP + Particle System + Page Transitions
+ * ================================================================ */
+
 import './bootstrap';
+
+/* ── Alpine.js ── */
+import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+
+/* ── GSAP + ScrollTrigger ── */
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
+window.gsap = gsap;
+window.ScrollTrigger = ScrollTrigger;
+
+/* ════════════════════════════════════════════
+ *  PARTICLE CANVAS — Purple star-dust effect
+ * ════════════════════════════════════════════ */
+function initParticles() {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animId;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = document.documentElement.scrollHeight;
+    }
+
+    // 4-pointed star path
+    function drawStar(ctx, cx, cy, size, opacity) {
+        ctx.save();
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = '#6C5CE7';
+        ctx.shadowColor = '#6C5CE7';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        for (let i = 0; i < 4; i++) {
+            const angle = (Math.PI / 2) * i - Math.PI / 2;
+            const outerX = cx + Math.cos(angle) * size;
+            const outerY = cy + Math.sin(angle) * size;
+            const innerAngle = angle + Math.PI / 4;
+            const innerX = cx + Math.cos(innerAngle) * (size * 0.35);
+            const innerY = cy + Math.sin(innerAngle) * (size * 0.35);
+            if (i === 0) ctx.moveTo(outerX, outerY);
+            else ctx.lineTo(outerX, outerY);
+            ctx.lineTo(innerX, innerY);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function createParticle() {
+        const isStar = Math.random() < 0.15;
+        return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height + canvas.height * 0.1,
+            size: isStar ? 3 + Math.random() * 4 : 1 + Math.random() * 2,
+            speedY: -(0.15 + Math.random() * 0.3),
+            speedX: (Math.random() - 0.5) * 0.2,
+            opacity: 0.15 + Math.random() * 0.25,
+            fadeDir: Math.random() < 0.5 ? 1 : -1,
+            fadeSpeed: 0.002 + Math.random() * 0.004,
+            isStar,
+        };
+    }
+
+    function init() {
+        resize();
+        particles = [];
+        const count = Math.min(70, Math.floor(canvas.width * canvas.height / 20000));
+        for (let i = 0; i < count; i++) {
+            particles.push(createParticle());
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((p, i) => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.opacity += p.fadeDir * p.fadeSpeed;
+
+            if (p.opacity <= 0.05 || p.opacity >= 0.4) p.fadeDir *= -1;
+            p.opacity = Math.max(0, Math.min(0.4, p.opacity));
+
+            if (p.y < -20 || p.x < -20 || p.x > canvas.width + 20) {
+                particles[i] = createParticle();
+                particles[i].y = canvas.height + 10;
+            }
+
+            if (p.isStar) {
+                drawStar(ctx, p.x, p.y, p.size, p.opacity);
+            } else {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(108, 92, 231, ${p.opacity})`;
+                ctx.fill();
+            }
+        });
+
+        animId = requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(init, 250);
+    });
+}
+
+/* ════════════════════════════════════════════
+ *  GSAP SCROLL ANIMATIONS
+ * ════════════════════════════════════════════ */
+function initScrollAnimations() {
+    // Fade-up cards
+    gsap.utils.toArray('[data-animate="fade-up"]').forEach((el) => {
+        gsap.from(el, {
+            y: 30,
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: el,
+                start: 'top 85%',
+                once: true,
+            },
+        });
+    });
+
+    // Staggered children
+    gsap.utils.toArray('[data-animate="stagger"]').forEach((container) => {
+        const children = container.children;
+        gsap.from(children, {
+            y: 30,
+            opacity: 0,
+            scale: 0.95,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: container,
+                start: 'top 85%',
+                once: true,
+            },
+        });
+    });
+
+    // Word-by-word reveal for headings
+    gsap.utils.toArray('[data-animate="words"]').forEach((el) => {
+        const text = el.textContent;
+        el.innerHTML = text.split(' ').map(w => `<span class="inline-block">${w}&nbsp;</span>`).join('');
+        gsap.from(el.children, {
+            y: 20,
+            opacity: 0,
+            duration: 0.4,
+            stagger: 0.08,
+            ease: 'power2.out',
+            scrollTrigger: {
+                trigger: el,
+                start: 'top 85%',
+                once: true,
+            },
+        });
+    });
+
+    // Counter animation
+    gsap.utils.toArray('[data-counter]').forEach((el) => {
+        const target = parseInt(el.dataset.counter, 10) || 0;
+        const suffix = el.dataset.counterSuffix || '';
+        const prefix = el.dataset.counterPrefix || '';
+
+        ScrollTrigger.create({
+            trigger: el,
+            start: 'top 85%',
+            once: true,
+            onEnter: () => {
+                gsap.to({ val: 0 }, {
+                    val: target,
+                    duration: 2,
+                    ease: 'power2.out',
+                    onUpdate: function () {
+                        el.textContent = prefix + Math.round(this.targets()[0].val).toLocaleString() + suffix;
+                    },
+                });
+            },
+        });
+    });
+}
+
+/* ════════════════════════════════════════════
+ *  PAGE TRANSITION — fade in from bottom
+ * ════════════════════════════════════════════ */
+function initPageTransition() {
+    const main = document.querySelector('main') || document.querySelector('.page-enter');
+    if (main && !main.classList.contains('no-transition')) {
+        main.style.opacity = '0';
+        main.style.transform = 'translateY(12px)';
+        requestAnimationFrame(() => {
+            main.style.transition = 'opacity 0.35s ease-out, transform 0.35s ease-out';
+            main.style.opacity = '1';
+            main.style.transform = 'translateY(0)';
+        });
+    }
+}
+
+/* ════════════════════════════════════════════
+ *  SPLASH SCREEN — first visit only
+ * ════════════════════════════════════════════ */
+function initSplash() {
+    if (sessionStorage.getItem('eventra-splash-shown')) return;
+
+    const splash = document.getElementById('eventra-splash');
+    if (!splash) return;
+
+    sessionStorage.setItem('eventra-splash-shown', 'true');
+    splash.style.display = 'flex';
+
+    setTimeout(() => {
+        splash.style.opacity = '0';
+        splash.style.transition = 'opacity 0.4s ease-out';
+        setTimeout(() => splash.remove(), 400);
+    }, 600);
+}
+
+/* ════════════════════════════════════════════
+ *  INIT ON DOM READY
+ * ════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+    initSplash();
+    initParticles();
+    initPageTransition();
+    initScrollAnimations();
+});
+
+/* ── Start Alpine.js ── */
+Alpine.start();

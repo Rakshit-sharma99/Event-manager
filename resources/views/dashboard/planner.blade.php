@@ -2,164 +2,349 @@
 @section('page-title','Dashboard')
 
 @section('content')
-<section class="plain-section">
-    <h2>Hello, {{ $user->name }}</h2>
-    <p class="plain-muted">Plain dashboard for backend-first development.</p>
-</section>
+<div class="db-content">
 
-<section class="mobile-safe-grid plain-section">
-    @foreach([
-        ['Total Events', $stats['events'], 'Workspace event records'],
-        ['Total Guests', $stats['guests'], 'Guest records across events'],
-        ['Total Spent', 'Rs. '.number_format($stats['spent']), 'Recorded expenses'],
-        ['Pending Tasks', $stats['tasks'], 'Tasks still open'],
-    ] as [$label, $value, $copy])
-        <article class="stat-card plain-stat">
-            <p>{{ $label }}</p>
-            <strong>{{ $value }}</strong>
-            <small class="plain-muted">{{ $copy }}</small>
-        </article>
-    @endforeach
-</section>
-
-<section class="plain-section grid-list">
-    <article class="panel">
-        <h3>Upcoming Events</h3>
-        @forelse($upcoming as $event)
-            <p>
-                <a href="{{ auth()->user()->role === 'planner' ? route('events.show', $event) : '#' }}">
-                    {{ $event->event_name }}
-                </a>
-                <br>
-                <span class="plain-muted">
-                    {{ optional($event->event_date)->format('M d, Y') }} -
-                    {{ $event->location }} -
-                    {{ $event->guest_count_expected }} guests
-                </span>
-            </p>
-        @empty
-            <p>No events yet.</p>
-        @endforelse
-    </article>
-
-    <article class="panel">
-        <h3>Quick Actions</h3>
-        <div class="plain-actions">
-            @if(auth()->user()->role === 'planner')
-                <a class="btn-primary" href="{{ route('events.create') }}">New Event</a>
-            @endif
-            <a class="btn-ghost" href="{{ route('vendors.index') }}">Vendors</a>
-            <a class="btn-ghost" href="{{ route('profile.edit') }}">Profile</a>
-        </div>
-    </article>
-</section>
-
-<!-- ── Find Vendors Section ── -->
-<section class="plain-section" id="find-vendors">
-    <div class="panel" style="padding: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-            <div>
-                <h3 style="margin: 0;">Find Vendors</h3>
-                <p class="plain-muted" style="margin: 4px 0 0;">Discover registered vendors by category or search by name.</p>
+    {{-- ── Stats Row ── --}}
+    <div class="db-stats-row">
+        @php
+            $statCards = [
+                ['Total Events', $stats['events'], 'All your workspace events', false, '📅'],
+                ['Total Guests', $stats['guests'], 'Across all events', false, '👥'],
+                ['Total Spent', '₹' . number_format($stats['spent']), 'Recorded expenses', true, '💰'],
+                ['Pending Tasks', $stats['tasks'], 'Tasks still open', false, '✅'],
+            ];
+        @endphp
+        @foreach($statCards as $i => [$label, $value, $sub, $highlight, $emoji])
+            <div class="db-stat-card {{ $highlight ? 'db-stat-card--highlight' : '' }} db-animate db-animate-delay-{{ $i + 1 }}">
+                <div class="db-stat-icon {{ $highlight ? 'db-stat-icon--white' : 'db-stat-icon--purple' }}">
+                    <span style="font-size:1.2rem;">{{ $emoji }}</span>
+                </div>
+                <div>
+                    <p class="db-stat-label">{{ $label }}</p>
+                    <p class="db-stat-value">{{ $value }}</p>
+                    <p class="db-stat-sub">{{ $sub }}</p>
+                </div>
             </div>
-            <a href="{{ route('vendors.index') }}" style="font-weight: 600; color: #2563eb; text-decoration: none; font-size: 0.95rem;">View Full Directory →</a>
+        @endforeach
+    </div>
+
+    {{-- ── Main Grid: Upcoming Events | Quick Actions | Budget Overview ── --}}
+    <div class="db-main-grid">
+        {{-- Upcoming Events --}}
+        <div class="db-card db-animate db-animate-delay-3">
+            <div class="db-card-header">
+                <h3>Upcoming Events</h3>
+                <a href="{{ route('events.index') }}" class="db-card-link">View All →</a>
+            </div>
+
+            @forelse($upcoming as $event)
+                <div class="db-event-item">
+                    @if($event->cover_image)
+                        <img src="{{ asset('storage/' . $event->cover_image) }}" alt="{{ $event->event_name }}" class="db-event-thumb">
+                    @else
+                        <div class="db-event-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🎉</div>
+                    @endif
+                    <div class="db-event-info">
+                        <a href="{{ route('events.show', $event) }}" class="db-event-name">{{ $event->event_name }}</a>
+                        <div class="db-event-meta">
+                            <span>📅 {{ optional($event->event_date)->format('M d, Y') ?? 'TBD' }}</span>
+                            <span>• {{ $event->location ?? 'TBD' }}</span>
+                        </div>
+                        <div class="db-event-guests">👥 {{ $event->guest_count_expected ?? 0 }} guests</div>
+                    </div>
+                    <span class="db-event-status db-event-status--upcoming">Upcoming</span>
+                    <a href="{{ route('events.show', $event) }}" class="db-event-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+            @empty
+                <div style="text-align:center;padding:32px 0;color:var(--db-text-muted);">
+                    <p style="font-size:2rem;margin:0;">📅</p>
+                    <p style="margin:8px 0 0;">No upcoming events yet.</p>
+                    <a href="{{ route('events.create') }}" class="db-card-link" style="justify-content:center;margin-top:8px;">Create your first event →</a>
+                </div>
+            @endforelse
         </div>
 
-        <!-- Filters -->
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-            <select id="vendor-category-filter" onchange="filterVendors()" style="padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; min-width: 180px; font-size: 0.95rem;">
-                <option value="">All Categories</option>
-                @foreach($vendorCategories as $cat)
-                    <option value="{{ $cat }}">{{ str($cat)->headline() }}</option>
-                @endforeach
-            </select>
-            <input id="vendor-search-input" type="text" placeholder="Search by vendor name..." oninput="debounceSearch()" style="flex: 1; min-width: 200px; padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem;">
+        {{-- Quick Actions --}}
+        <div class="db-card db-animate db-animate-delay-4">
+            <div class="db-card-header">
+                <h3>Quick Actions ✨</h3>
+            </div>
+            <div class="db-quick-grid">
+                <a href="{{ route('events.create') }}" class="db-quick-item">
+                    <div class="db-quick-icon db-quick-icon--purple">➕</div>
+                    New Event
+                </a>
+                <a href="{{ route('vendors.index') }}" class="db-quick-item">
+                    <div class="db-quick-icon db-quick-icon--blue">👥</div>
+                    Vendors
+                </a>
+                @if($activeEvent)
+                    <a href="{{ route('guests.index', $activeEvent) }}" class="db-quick-item">
+                        <div class="db-quick-icon db-quick-icon--pink">🎟️</div>
+                        Guests
+                    </a>
+                    <a href="{{ route('tasks.index', $activeEvent) }}" class="db-quick-item">
+                        <div class="db-quick-icon db-quick-icon--green">✅</div>
+                        Tasks
+                    </a>
+                    <a href="{{ route('budget.index', $activeEvent) }}" class="db-quick-item">
+                        <div class="db-quick-icon db-quick-icon--amber">💰</div>
+                        Budget
+                    </a>
+                @else
+                    <a href="#" class="db-quick-item">
+                        <div class="db-quick-icon db-quick-icon--pink">🎟️</div>
+                        Guests
+                    </a>
+                    <a href="#" class="db-quick-item">
+                        <div class="db-quick-icon db-quick-icon--green">✅</div>
+                        Tasks
+                    </a>
+                    <a href="#" class="db-quick-item">
+                        <div class="db-quick-icon db-quick-icon--amber">💰</div>
+                        Budget
+                    </a>
+                @endif
+                <a href="{{ route('profile.edit') }}" class="db-quick-item">
+                    <div class="db-quick-icon db-quick-icon--indigo">👤</div>
+                    Profile
+                </a>
+            </div>
         </div>
 
-        <!-- Vendor Results Grid -->
-        <div id="vendor-results" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
-            <p class="plain-muted" style="text-align: center; grid-column: 1 / -1; padding: 24px;">Select a category or start typing to search vendors.</p>
+        {{-- Budget Overview --}}
+        <div class="db-card db-animate db-animate-delay-5">
+            <div class="db-card-header">
+                <h3>Budget Overview</h3>
+                <button style="background:none;border:none;cursor:pointer;color:var(--db-text-muted);padding:0;">•••</button>
+            </div>
+
+            <div class="db-budget-chart-wrap">
+                <div class="db-donut-container">
+                    <canvas id="budgetDonut"></canvas>
+                    <div class="db-donut-center">
+                        <span class="db-donut-amount">₹{{ number_format($stats['spent']) }}</span>
+                        <span class="db-donut-label">Total Spent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="db-budget-legend" id="budgetLegend">
+                {{-- Filled by JS --}}
+            </div>
+
+            @if($activeEvent)
+                <a href="{{ route('budget.index', $activeEvent) }}" class="db-budget-link">View Budget Details →</a>
+            @endif
         </div>
     </div>
-</section>
 
+    {{-- ── Second Row: Find Vendors | Motivation | Activity Feed ── --}}
+    <div class="db-second-row">
+        {{-- Find Vendors --}}
+        <div class="db-card db-animate db-animate-delay-4">
+            <div class="db-card-header">
+                <h3>Find Vendors</h3>
+                <a href="{{ route('vendors.index') }}" class="db-card-link">View Directory →</a>
+            </div>
+
+            <div class="db-vendor-search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:var(--db-text-muted);flex-shrink:0;"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="Search by vendor name..." id="db-vendor-search">
+            </div>
+
+            <p style="font-size:0.8rem;font-weight:600;color:var(--db-text-muted);margin:0 0 12px;text-transform:uppercase;letter-spacing:0.05em;">Popular Categories</p>
+
+            <div class="db-vendor-categories">
+                <a href="{{ route('vendors.index') }}?category=venue" class="db-vendor-cat">
+                    <div class="db-vendor-cat-icon db-vendor-cat-icon--purple">🏛️</div>
+                    Venues
+                </a>
+                <a href="{{ route('vendors.index') }}?category=catering" class="db-vendor-cat">
+                    <div class="db-vendor-cat-icon db-vendor-cat-icon--pink">🍰</div>
+                    Catering
+                </a>
+                <a href="{{ route('vendors.index') }}?category=photography" class="db-vendor-cat">
+                    <div class="db-vendor-cat-icon db-vendor-cat-icon--blue">📸</div>
+                    Photography
+                </a>
+                <a href="{{ route('vendors.index') }}?category=decor" class="db-vendor-cat">
+                    <div class="db-vendor-cat-icon db-vendor-cat-icon--red">💐</div>
+                    Décor
+                </a>
+                <a href="{{ route('vendors.index') }}?category=entertainment" class="db-vendor-cat">
+                    <div class="db-vendor-cat-icon db-vendor-cat-icon--green">🎵</div>
+                    Entertainment
+                </a>
+                <a href="{{ route('vendors.index') }}" class="db-vendor-cat">
+                    <div class="db-vendor-cat-icon db-vendor-cat-icon--gray">•••</div>
+                    More
+                </a>
+            </div>
+        </div>
+
+        {{-- Motivation Card --}}
+        <div class="db-card db-motivation db-animate db-animate-delay-5">
+            <h3>You're doing great! 🎉</h3>
+            <p>{{ $stats['tasks'] > 0 ? $stats['tasks'] . ' tasks can be completed this week.' : 'All tasks are done! Keep up the great work.' }}</p>
+            @if($activeEvent)
+                <a href="{{ route('tasks.index', $activeEvent) }}" class="db-motivation-btn">
+                    View My Tasks →
+                </a>
+            @endif
+            <div class="db-motivation-art">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="45" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="30" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+                    <path d="M30 70 Q50 30 70 70" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+        </div>
+
+        {{-- Activity Feed --}}
+        <div class="db-card db-animate db-animate-delay-6">
+            <div class="db-card-header">
+                <h3>Activity Feed</h3>
+                <button style="background:none;border:none;cursor:pointer;color:var(--db-text-muted);padding:0;">•••</button>
+            </div>
+
+            <div class="db-activity-item">
+                <div class="db-activity-icon db-activity-icon--purple">📋</div>
+                <div class="db-activity-text">
+                    <p class="db-activity-title">New vendor booked</p>
+                    <p class="db-activity-desc">Photography Studio</p>
+                </div>
+                <span class="db-activity-time">2h ago</span>
+            </div>
+
+            <div class="db-activity-item">
+                <div class="db-activity-icon db-activity-icon--green">✅</div>
+                <div class="db-activity-text">
+                    <p class="db-activity-title">Task completed</p>
+                    <p class="db-activity-desc">Finalize guest list</p>
+                </div>
+                <span class="db-activity-time">5h ago</span>
+            </div>
+
+            <div class="db-activity-item">
+                <div class="db-activity-icon db-activity-icon--amber">💸</div>
+                <div class="db-activity-text">
+                    <p class="db-activity-title">Expense added</p>
+                    <p class="db-activity-desc">Paid to Decor World</p>
+                </div>
+                <span class="db-activity-time">1d ago</span>
+            </div>
+
+            <a href="#" class="db-card-link" style="justify-content:center;margin-top:12px;">View All Activity →</a>
+        </div>
+    </div>
+
+    {{-- ── Stay Connected Banner ── --}}
+    <div class="db-connected db-animate db-animate-delay-5">
+        <div class="db-connected-left">
+            <div class="db-connected-icon">💬</div>
+            <div>
+                <h4>Stay connected</h4>
+                <p>You have unread messages from your team and vendors.</p>
+            </div>
+        </div>
+        <a href="{{ route('chat.index') }}" class="db-connected-btn">
+            💬 Open Messages
+        </a>
+    </div>
+
+</div>
+
+{{-- Budget Donut Chart Script --}}
 <script>
-let vendorSearchTimer = null;
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('budgetDonut');
+    if (!canvas) return;
 
-function debounceSearch() {
-    clearTimeout(vendorSearchTimer);
-    vendorSearchTimer = setTimeout(() => filterVendors(), 350);
-}
+    const ctx = canvas.getContext('2d');
+    const size = 180;
+    canvas.width = size * 2;
+    canvas.height = size * 2;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    ctx.scale(2, 2);
 
-function filterVendors() {
-    const category = document.getElementById('vendor-category-filter').value;
-    const q = document.getElementById('vendor-search-input').value.trim();
-    const container = document.getElementById('vendor-results');
+    const total = {{ $stats['spent'] ?: 1 }};
 
-    if (!category && !q) {
-        container.innerHTML = '<p class="plain-muted" style="text-align: center; grid-column: 1 / -1; padding: 24px;">Select a category or start typing to search vendors.</p>';
-        return;
+    // Fetch budget breakdown if active event exists
+    @if($activeEvent)
+        fetch('/api/budget/{{ $activeEvent->getKey() }}/chart')
+            .then(r => r.json())
+            .then(data => {
+                if (data.length) {
+                    drawDonut(ctx, size, data, total);
+                    renderLegend(data, total);
+                } else {
+                    drawDefaultDonut(ctx, size, total);
+                }
+            })
+            .catch(() => drawDefaultDonut(ctx, size, total));
+    @else
+        drawDefaultDonut(ctx, size, total);
+    @endif
+
+    function drawDefaultDonut(ctx, size, total) {
+        const defaultData = [
+            { category: 'Venue', amount: Math.round(total * 0.6) },
+            { category: 'Catering', amount: Math.round(total * 0.2) },
+            { category: 'Décor', amount: Math.round(total * 0.1) },
+            { category: 'Others', amount: Math.round(total * 0.1) },
+        ];
+        drawDonut(ctx, size, defaultData, total);
+        renderLegend(defaultData, total);
     }
 
-    container.innerHTML = '<p class="plain-muted" style="text-align: center; grid-column: 1 / -1; padding: 24px;">Loading vendors...</p>';
+    function drawDonut(ctx, size, data, total) {
+        const colors = ['#7c3aed', '#3b82f6', '#f59e0b', '#10b981', '#ec4899', '#6366f1', '#ef4444'];
+        const cx = size / 2, cy = size / 2, r = 65, lineW = 18;
+        let startAngle = -Math.PI / 2;
 
-    const params = new URLSearchParams();
-    if (category) params.set('category', category);
-    if (q) params.set('q', q);
+        ctx.clearRect(0, 0, size, size);
 
-    fetch('/api/vendors/filter?' + params.toString(), {
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(r => r.json())
-    .then(vendors => {
-        if (!vendors.length) {
-            container.innerHTML = '<p class="plain-muted" style="text-align: center; grid-column: 1 / -1; padding: 24px;">No vendors found matching your criteria.</p>';
-            return;
-        }
-        container.innerHTML = vendors.map(v => {
-            const cat = v.category ? v.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Vendor';
-            const rating = v.rating ? Number(v.rating).toFixed(1) : '0.0';
-            const priceMin = v.price_min ? '₹' + Number(v.price_min).toLocaleString('en-IN') : '₹0';
-            const loc = v.location || v.base_location || '';
-            const desc = v.description ? (v.description.length > 80 ? v.description.substring(0, 80) + '...' : v.description) : '';
-            const vendorId = v._id || v.id;
+        // Background ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = '#f3f4f6';
+        ctx.lineWidth = lineW;
+        ctx.stroke();
 
-            return `<div style="border: 1px solid #d8d8d8; border-radius: 12px; padding: 16px; background: #fafafa; transition: box-shadow 0.2s;" onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.08)'" onmouseleave="this.style.boxShadow='none'">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="background: rgba(37,99,235,0.1); color: #2563eb; padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">${escVendorHtml(cat)}</span>
-                    <span style="color: #d97706; font-weight: 700; font-size: 0.9rem;">★ ${rating}</span>
-                </div>
-                <h4 style="margin: 0 0 4px; font-size: 1.1rem; font-weight: 700;">${escVendorHtml(v.business_name || v.name || 'Vendor')}</h4>
-                <p style="margin: 0 0 8px; color: #888; font-size: 0.9rem; line-height: 1.4;">${escVendorHtml(desc)}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #666;">
-                    <span>📍 ${escVendorHtml(loc)}</span>
-                    <strong>${priceMin}+</strong>
-                </div>
-                <div style="display: flex; gap: 8px; margin-top: 12px;">
-                    <a href="/vendors/${vendorId}" style="flex: 1; text-align: center; background: #2563eb; color: #fff; padding: 8px 0; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.9rem;">View Details</a>
-                    <form method="POST" action="/vendors/${vendorId}/favorite" style="margin: 0;">
-                        <input type="hidden" name="_token" value="${document.querySelector('meta[name=csrf-token]')?.content || ''}">
-                        <button type="submit" style="background: #f5f5f5; border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 0.9rem;" title="Add to favorites">❤️</button>
-                    </form>
-                </div>
+        if (total <= 0) return;
+
+        data.forEach((item, i) => {
+            const sliceAngle = (item.amount / total) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+            ctx.strokeStyle = colors[i % colors.length];
+            ctx.lineWidth = lineW;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            startAngle += sliceAngle;
+        });
+    }
+
+    function renderLegend(data, total) {
+        const colors = ['#7c3aed', '#3b82f6', '#f59e0b', '#10b981', '#ec4899', '#6366f1', '#ef4444'];
+        const legend = document.getElementById('budgetLegend');
+        if (!legend) return;
+
+        legend.innerHTML = data.slice(0, 4).map((item, i) => {
+            const pct = total > 0 ? Math.round((item.amount / total) * 100) : 0;
+            const name = (item.category || item.label || 'Other').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            return `<div class="db-budget-legend-item">
+                <span class="db-budget-legend-dot" style="background:${colors[i % colors.length]}"></span>
+                <span class="db-budget-legend-name">${name}</span>
+                <span class="db-budget-legend-value">₹${Number(item.amount).toLocaleString('en-IN')}</span>
+                <span class="db-budget-legend-pct">${pct}%</span>
             </div>`;
         }).join('');
-    })
-    .catch(() => {
-        container.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; padding: 24px; color: #dc2626;">Error loading vendors. Please try again.</p>';
-    });
-}
-
-function escVendorHtml(s) {
-    if (!s) return '';
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-}
-
-// Auto-load all vendors on page load
-document.addEventListener('DOMContentLoaded', function() {
-    filterVendors();
+    }
 });
 </script>
 @endsection
