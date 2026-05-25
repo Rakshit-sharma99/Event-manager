@@ -6,71 +6,100 @@
 {{-- ═══════════════════════════════════════════════════════════════
      HERO SECTION
      ═══════════════════════════════════════════════════════════════ --}}
-<section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-cover bg-center bg-no-repeat" style="background-image: linear-gradient(135deg, rgba(248, 248, 252, 0.9) 0%, rgba(248, 248, 252, 0.8) 50%, rgba(248, 248, 252, 0.6) 100%), url('{{ asset('images/hero-bg.jpg') }}');">
+<section class="relative min-h-screen flex items-center pt-28 pb-36 overflow-hidden bg-cover bg-center bg-no-repeat bg-neutral-dark" style="background-image: linear-gradient(to right, rgba(15, 15, 20, 0.85) 0%, rgba(15, 15, 20, 0.45) 50%, rgba(15, 15, 20, 0.15) 100%), linear-gradient(to bottom, rgba(15, 15, 20, 0.2) 0%, rgba(15, 15, 20, 0.85) 100%), url('{{ asset('images/hero-bg.jpg') }}');">
     {{-- Radial gradient bloom --}}
-    <div class="absolute top-1/4 left-1/3 w-[600px] h-[600px] rounded-full bg-primary-500/5 blur-[120px] pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-accent/5 blur-[100px] pointer-events-none"></div>
+    <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary-500/10 blur-[130px] pointer-events-none"></div>
+    <div class="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-accent/10 blur-[120px] pointer-events-none"></div>
 
-    <div class="section flex flex-col lg:flex-row items-center gap-12 lg:gap-20 py-12">
-        {{-- Left — Text --}}
-        <div class="flex-1 max-w-xl bg-white/80 backdrop-blur-md border border-white/50 p-8 sm:p-10 rounded-xl shadow-lg" data-animate="fade-up">
-            <h1 class="text-[clamp(2.5rem,5vw,3.5rem)] font-extrabold leading-[1.1] tracking-tight text-neutral-dark mb-6">
-                Plan. Manage.<br>
-                <span class="text-gradient">Celebrate.</span>
+    {{-- Background Swoosh with Sparkle --}}
+    <div class="absolute left-[-5%] bottom-[15%] w-[45%] h-[30%] pointer-events-none opacity-30 z-10 hidden sm:block">
+        <svg class="w-full h-full text-secondary-500" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,180 C120,60 280,60 400,120" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M400,120 L395,112 M400,120 L405,128" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="400" cy="120" r="4" fill="currentColor"/>
+        </svg>
+    </div>
+
+    <div class="section flex flex-col lg:flex-row items-center justify-between gap-12 py-12 relative z-20 w-full">
+        {{-- Left — Text Content --}}
+        <div class="flex-1 max-w-3xl text-left" data-animate="fade-up">
+            {{-- Top Sparkle Stars --}}
+            <div class="flex items-center gap-2 mb-6">
+                <!-- Star 1 (larger) -->
+                <svg class="w-7 h-7 text-secondary-400 animate-float" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C12 7.5 16.5 12 22 12C16.5 12 12 16.5 12 22C12 16.5 7.5 12 2 12C7.5 12 12 7.5 12 2Z"/>
+                </svg>
+                <!-- Star 2 (smaller) -->
+                <svg class="w-4 h-4 text-accent animate-float delay-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 4C12 8.4 15.6 12 20 12C15.6 12 12 15.6 12 20C12 15.6 8.4 12 4 12C8.4 12 12 8.4 12 4Z"/>
+                </svg>
+            </div>
+            
+            {{-- Heading --}}
+            <h1 class="text-[clamp(3rem,6.5vw,5.75rem)] font-extrabold leading-[1.05] tracking-tight text-white mb-8">
+                Make Every<br>
+                Moment<br>
+                <span class="relative inline-block mt-2 pb-2">
+                    <span class="bg-gradient-to-r from-primary-400 via-secondary-400 to-accent bg-clip-text text-transparent">Unforgettable</span>
+                    {{-- Premium curved underline SVG --}}
+                    <svg class="absolute -bottom-2.5 left-0 w-full h-4 text-accent/90" viewBox="0 0 300 24" fill="none" preserveAspectRatio="none">
+                        <path d="M6 8C90 18 210 18 294 8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+                        <path d="M40 14C120 20 200 20 260 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="opacity-40"/>
+                    </svg>
+                </span>
             </h1>
-            <p class="text-body-lg text-surface-600 mb-8 max-w-md leading-relaxed">
-                The premium event management platform for unforgettable experiences. From intimate gatherings to grand celebrations.
-            </p>
-            <div class="flex flex-wrap gap-4">
-                <x-btn href="{{ route('register') }}" size="lg" class="shadow-glow">Get Started Free</x-btn>
-                <x-btn variant="ghost" href="#how-it-works" size="lg">
-                    <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Watch Demo
-                </x-btn>
+
+            {{-- Action Button --}}
+            <div class="mt-12 flex flex-wrap gap-4">
+                <a href="{{ route('register') }}" class="group relative inline-flex items-center gap-4 bg-gradient-to-r from-primary-500 via-secondary-500 to-accent hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 text-white font-bold rounded-full px-8 py-4 text-body-lg transition-all duration-200">
+                    Plan Your Event
+                    <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-body-lg group-hover:translate-x-1 transition-transform">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </span>
+                </a>
             </div>
         </div>
 
-        {{-- Right — 3D Card Mockup --}}
-        <div class="flex-1 flex justify-center" data-animate="fade-up">
-            <div class="relative w-80 h-96" style="perspective: 800px;">
-                <div class="absolute inset-0 rounded-xl bg-neutral-dark/85 backdrop-blur-lg border border-white/10 shadow-2xl p-6 text-white animate-float"
-                     style="transform: rotateY(-8deg) rotateX(4deg);">
-                    <div class="flex items-center gap-2 mb-4 text-primary-400">
-                        <span class="text-lg">✦</span>
-                        <span class="text-body font-bold uppercase tracking-wider text-[11px] text-white/90">Event Preview</span>
-                    </div>
-                    <div class="w-full h-32 rounded-lg mb-4 overflow-hidden border border-white/10">
-                        <img src="{{ asset('images/summer_gala.png') }}" alt="Summer Gala" class="w-full h-full object-cover">
-                    </div>
-                    <h4 class="text-h4 font-bold mb-1 text-white">Summer Gala 2026</h4>
-                    <p class="text-caption text-white/70 mb-3">Jun 15, 2026 • The Grand Ballroom</p>
-                    <div class="flex items-center gap-4 text-caption text-white/60">
-                        <span>👥 250 guests</span>
-                        <span>📋 12 tasks</span>
-                    </div>
-                    <div class="mt-4 flex gap-2">
-                        <x-badge variant="active" class="uppercase text-[9px] tracking-wider py-0.5 px-2 bg-success/20 text-success border border-success/30">Upcoming</x-badge>
-                        <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-bold">8 vendors</span>
-                    </div>
-                </div>
-                {{-- Shadow card behind --}}
-                <div class="absolute inset-0 rounded-xl bg-primary-500/20 blur-md -z-10" style="transform: rotateY(-12deg) rotateX(6deg) translateZ(-30px);"></div>
-            </div>
-        </div>
+        {{-- Right — Completely empty to let the background image shine through cleanly --}}
+        <div class="flex-1 lg:block hidden"></div>
+    </div>
+
+    {{-- Bottom Carousel Indicators --}}
+    <div class="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+        <span class="w-8 h-2 rounded-full bg-secondary-500 shadow-glow"></span>
+        <span class="w-2 h-2 rounded-full bg-white/40"></span>
+        <span class="w-2 h-2 rounded-full bg-white/40"></span>
+    </div>
+
+    {{-- Bottom Curved Divider with glowing stroke --}}
+    <div class="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-10">
+        <svg class="relative block w-full h-[80px]" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="curve-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#6C5CE7" />
+                    <stop offset="50%" stop-color="#A855F7" />
+                    <stop offset="100%" stop-color="#FF4DB6" />
+                </linearGradient>
+            </defs>
+            <!-- Background fill (matching social proof bar) -->
+            <path d="M0,60 C300,120 900,20 1200,80 L1200,120 L0,120 Z" fill="#0F0F14"></path>
+            <!-- Glowing stroke line -->
+            <path d="M0,60 C300,120 900,20 1200,80" stroke="url(#curve-grad)" stroke-width="2.5" fill="none" class="opacity-80"></path>
+        </svg>
     </div>
 </section>
 
 {{-- ═══════════════════════════════════════════════════════════════
      SOCIAL PROOF BAR
      ═══════════════════════════════════════════════════════════════ --}}
-<section class="py-8 border-y border-surface-100 bg-surface-50/50 overflow-hidden">
-    <div class="section text-center mb-4">
-        <p class="text-caption font-semibold text-surface-400 uppercase tracking-wider">Trusted by 10,000+ event planners worldwide</p>
+<section class="py-12 bg-neutral-dark border-b border-surface-800/10 overflow-hidden">
+    <div class="section text-center mb-6">
+        <p class="text-caption font-bold text-surface-400 uppercase tracking-widest">Trusted by 10,000+ event planners worldwide</p>
     </div>
     <div class="relative overflow-hidden">
         <div class="flex animate-marquee gap-16 items-center whitespace-nowrap">
             @foreach(['EventMaster','CelebratePro','GalaForge','PartyPilot','FestivHub','WeddingWise','EventMaster','CelebratePro','GalaForge','PartyPilot','FestivHub','WeddingWise'] as $brand)
-                <span class="text-h3 font-extrabold text-surface-200 select-none">{{ $brand }}</span>
+                <span class="text-h3 font-extrabold text-surface-700 select-none opacity-40">{{ $brand }}</span>
             @endforeach
         </div>
     </div>
