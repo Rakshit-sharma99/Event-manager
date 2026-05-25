@@ -7,7 +7,13 @@
     <title>{{ $title ?? 'Eventra' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-neutral-light text-neutral-dark font-sans min-h-screen">
+<body class="premium-dark-theme text-white font-sans min-h-screen relative overflow-x-hidden">
+
+    {{-- Floating Premium Background Blur Blobs --}}
+    <div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-[120px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-accent/8 blur-[150px] pointer-events-none z-0"></div>
+    <div class="fixed top-[30%] left-[25%] w-[35vw] h-[35vw] rounded-full bg-secondary/6 blur-[100px] pointer-events-none z-0"></div>
+
 
     @php
         $user = auth()->user();

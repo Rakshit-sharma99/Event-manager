@@ -6,7 +6,7 @@
 {{-- ═══════════════════════════════════════════════════════════════
      HERO SECTION
      ═══════════════════════════════════════════════════════════════ --}}
-<section class="relative min-h-screen flex items-center pt-28 pb-36 overflow-hidden bg-cover bg-center bg-no-repeat bg-neutral-dark" style="background-image: linear-gradient(to right, rgba(15, 15, 20, 0.85) 0%, rgba(15, 15, 20, 0.45) 50%, rgba(15, 15, 20, 0.15) 100%), linear-gradient(to bottom, rgba(15, 15, 20, 0.2) 0%, rgba(15, 15, 20, 0.85) 100%), url('{{ asset('images/hero-bg.jpg') }}');">
+<section class="relative min-h-screen flex items-center pt-28 pb-36 overflow-hidden bg-cover bg-center bg-no-repeat bg-neutral-dark" style="background-image: linear-gradient(to right, rgba(15, 15, 20, 0.65) 0%, rgba(15, 15, 20, 0.35) 40%, rgba(15, 15, 20, 0) 75%), linear-gradient(to bottom, rgba(15, 15, 20, 0.1) 0%, rgba(15, 15, 20, 0.8) 100%), url('{{ asset('images/hero-bg.jpg') }}');">
     {{-- Radial gradient bloom --}}
     <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary-500/10 blur-[130px] pointer-events-none"></div>
     <div class="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-accent/10 blur-[120px] pointer-events-none"></div>
@@ -20,7 +20,7 @@
         </svg>
     </div>
 
-    <div class="section flex flex-col lg:flex-row items-center justify-between gap-12 py-12 relative z-20 w-full">
+    <div class="section-wide flex flex-col lg:flex-row items-center justify-between gap-12 py-12 relative z-20 w-full">
         {{-- Left — Text Content --}}
         <div class="flex-1 max-w-3xl text-left" data-animate="fade-up">
             {{-- Top Sparkle Stars --}}

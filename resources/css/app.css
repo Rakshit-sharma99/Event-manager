@@ -220,6 +220,10 @@
         @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
     }
 
+    .section-wide {
+        @apply max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16;
+    }
+
     /* ── Nav Link Underline ── */
     .nav-link {
         @apply relative text-body font-medium text-surface-600 hover:text-primary-500 transition-colors duration-200;
@@ -286,3 +290,443 @@
     /* Text balance */
     .text-balance { text-wrap: balance; }
 }
+
+/* ================================================================
+ *  GOOEY NAV SYSTEM — React Bits / Custom Alpine.js Port
+ * ================================================================ */
+:root {
+  --linear-ease: linear(
+    0,
+    0.068,
+    0.19 2.7%,
+    0.804 8.1%,
+    1.037,
+    1.199 13.2%,
+    1.245,
+    1.27 15.8%,
+    1.274,
+    1.272 17.4%,
+    1.249 19.1%,
+    0.996 28%,
+    0.949,
+    0.928 33.3%,
+    0.926,
+    0.933 36.8%,
+    1.001 45.6%,
+    1.013,
+    1.019 50.8%,
+    1.018 54.4%,
+    1 63.1%,
+    0.995 68%,
+    1.001 85%,
+    1
+  );
+  --color-1: #6C5CE7;
+  --color-2: #A855F7;
+  --color-3: #FF4DB6;
+  --color-4: #EC4899;
+}
+
+.gooey-nav-container {
+  position: relative;
+}
+
+.gooey-nav-container nav {
+  display: flex;
+  position: relative;
+  transform: translate3d(0, 0, 0.01px);
+}
+
+.gooey-nav-container nav ul {
+  display: flex;
+  gap: 1.5em;
+  list-style: none;
+  padding: 0 0.8em;
+  margin: 0;
+  position: relative;
+  z-index: 3;
+  color: white;
+  text-shadow: 0 1px 1px hsl(205deg 30% 10% / 0.2);
+}
+
+.gooey-nav-container nav ul li {
+  border-radius: 100vw;
+  position: relative;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 0 0.5px 1.5px transparent;
+  color: white;
+}
+
+.gooey-nav-container nav ul li a {
+  display: inline-block;
+  padding: 0.5em 1em;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.gooey-nav-container nav ul li:focus-within:has(:focus-visible) {
+  box-shadow: 0 0 0.5px 1.5px white;
+}
+
+.gooey-nav-container nav ul li::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 100vw;
+  background: white;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.gooey-nav-container nav ul li.active {
+  color: black !important;
+  text-shadow: none;
+}
+
+.gooey-nav-container nav ul li.active a {
+  color: #0F0F14 !important;
+  font-weight: 600;
+}
+
+.gooey-nav-container nav ul li.active::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.gooey-nav-container .effect {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  opacity: 1;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+
+.gooey-nav-container .effect.text {
+  color: white;
+  transition: color 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gooey-nav-container .effect.text.active {
+  color: #0F0F14;
+}
+
+.gooey-nav-container .effect.filter {
+  filter: blur(7px) contrast(100) blur(0);
+  mix-blend-mode: lighten;
+}
+
+.gooey-nav-container .effect.filter::before {
+  content: '';
+  position: absolute;
+  inset: -75px;
+  z-index: -2;
+  background: black;
+}
+
+.gooey-nav-container .effect.filter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: white;
+  transform: scale(0);
+  opacity: 0;
+  z-index: -1;
+  border-radius: 100vw;
+}
+
+.gooey-nav-container .effect.active::after {
+  animation: pill 0.3s ease both;
+}
+
+@keyframes pill {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.particle,
+.point {
+  display: block;
+  opacity: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  transform-origin: center;
+}
+
+.particle {
+  --time: 5s;
+  position: absolute;
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
+  animation: particle calc(var(--time)) ease 1 -350ms;
+}
+
+.point {
+  background: var(--color);
+  opacity: 1;
+  animation: point calc(var(--time)) ease 1 -350ms;
+}
+
+@keyframes particle {
+  0% {
+    transform: rotate(0deg) translate(calc(var(--start-x)), calc(var(--start-y)));
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  70% {
+    transform: rotate(calc(var(--rotate) * 0.5)) translate(calc(var(--end-x) * 1.2), calc(var(--end-y) * 1.2));
+    opacity: 1;
+    animation-timing-function: ease;
+  }
+
+  85% {
+    transform: rotate(calc(var(--rotate) * 0.66)) translate(calc(var(--end-x)), calc(var(--end-y)));
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(calc(var(--rotate) * 1.2)) translate(calc(var(--end-x) * 0.5), calc(var(--end-y) * 0.5));
+    opacity: 1;
+  }
+}
+
+@keyframes point {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  25% {
+    transform: scale(calc(var(--scale) * 0.25));
+  }
+
+  38% {
+    opacity: 1;
+  }
+
+  65% {
+    transform: scale(var(--scale));
+    opacity: 1;
+    animation-timing-function: ease;
+  }
+
+  85% {
+    transform: scale(var(--scale));
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* ── Form Autofill & Input Readability Override ── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Force bright white text for input fields in dark glass cards to ensure maximum contrast */
+.backdrop-blur-xl input,
+.backdrop-blur-xl select,
+.backdrop-blur-xl textarea {
+    color: #ffffff !important;
+}
+
+.backdrop-blur-xl input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ================================================================
+ *  PREMIUM DARK THEME — Glassmorphic SaaS Design
+ * ================================================================ */
+.premium-dark-theme {
+    background: radial-gradient(circle at top left, #0A091A 0%, #06050F 50%, #130B27 100%) !important;
+    color: #f3f4f6 !important;
+}
+
+/* Base typography mapping to light/silver colors for contrast */
+.premium-dark-theme .text-neutral-dark {
+    color: #ffffff !important;
+}
+.premium-dark-theme .text-surface-600 {
+    color: #e2e8f0 !important;
+}
+.premium-dark-theme .text-surface-500 {
+    color: #cbd5e1 !important;
+}
+.premium-dark-theme .text-surface-400 {
+    color: #94a3b8 !important;
+}
+.premium-dark-theme .text-surface-300 {
+    color: #64748b !important;
+}
+.premium-dark-theme .text-surface-200 {
+    color: #475569 !important;
+}
+.premium-dark-theme .text-surface-100 {
+    color: #334155 !important;
+}
+
+/* Glass Sidebar Override */
+.premium-dark-theme aside {
+    background: rgba(10, 8, 26, 0.4) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.premium-dark-theme aside .border-b,
+.premium-dark-theme aside .border-t,
+.premium-dark-theme aside .border-surface-100 {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.premium-dark-theme aside nav a {
+    color: rgba(255, 255, 255, 0.65);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-dark-theme aside nav a:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #ffffff !important;
+}
+
+/* Sidebar Active Menu Item - Glowing Purple/Blue Gradient Pill Effect */
+.premium-dark-theme aside nav a.bg-primary-500 {
+    background: linear-gradient(135deg, #6C5CE7 0%, #A855F7 100%) !important;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+/* Glass Header / Topbar Override */
+.premium-dark-theme header {
+    background: rgba(7, 6, 20, 0.25) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.premium-dark-theme header input {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+}
+
+.premium-dark-theme header .bg-white {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Frosted Glass Cards (Grid Layout) */
+.premium-dark-theme .card,
+.premium-dark-theme .card-glass,
+.premium-dark-theme [class*="card"] {
+    background: rgba(16, 14, 38, 0.45) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.premium-dark-theme .card-hover:hover,
+.premium-dark-theme .card:hover {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 12px 40px rgba(108, 92, 231, 0.18) !important;
+    transform: translateY(-4px) !important;
+}
+
+/* Stats Card Custom Designs */
+.premium-dark-theme .card-hover .w-11.h-11 {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Active Highlight Stats Card (Budget Spent) */
+.premium-dark-theme .card-hover.bg-brand-gradient {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.8) 0%, rgba(168, 85, 247, 0.8) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 12px 36px rgba(108, 92, 231, 0.25) !important;
+}
+
+.premium-dark-theme .card-hover.bg-brand-gradient .w-11.h-11 {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Form Inputs inside premium dark theme */
+.premium-dark-theme input[type="text"],
+.premium-dark-theme input[type="email"],
+.premium-dark-theme input[type="password"],
+.premium-dark-theme select,
+.premium-dark-theme textarea {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.premium-dark-theme input:focus,
+.premium-dark-theme select:focus,
+.premium-dark-theme textarea:focus {
+    border-color: #6C5CE7 !important;
+    box-shadow: 0 0 12px rgba(108, 92, 231, 0.25) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Soft Separators */
+.premium-dark-theme .border-b,
+.premium-dark-theme .border-t,
+.premium-dark-theme .border-surface-100,
+.premium-dark-theme .border-surface-200 {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Circular/grid category and quick action panels */
+.premium-dark-theme a[href*="vendors"],
+.premium-dark-theme a[class*="group"],
+.premium-dark-theme .grid a {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.premium-dark-theme a[href*="vendors"]:hover,
+.premium-dark-theme a[class*="group"]:hover,
+.premium-dark-theme .grid a:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+

@@ -234,6 +234,12 @@ function initSplash() {
 }
 
 /* ════════════════════════════════════════════
+ *  FLOATING LINES — WebGL background for auth pages
+ * ════════════════════════════════════════════ */
+import mountFloatingLines from './floating-lines';
+window.mountFloatingLines = mountFloatingLines;
+
+/* ════════════════════════════════════════════
  *  INIT ON DOM READY
  * ════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -241,7 +247,26 @@ document.addEventListener('DOMContentLoaded', () => {
     initParticles();
     initPageTransition();
     initScrollAnimations();
+
+    // Auto-init FloatingLines if container exists
+    const flContainer = document.getElementById('floating-lines-login') || document.getElementById('floating-lines-register');
+    if (flContainer) {
+        mountFloatingLines(flContainer, {
+            enabledWaves: ['top', 'middle', 'bottom'],
+            lineCount: 8,
+            lineDistance: 8,
+            bendRadius: 8,
+            bendStrength: -2,
+            interactive: true,
+            parallax: true,
+            animationSpeed: 1,
+            gradientStart: '#e945f5',
+            gradientMid: '#6f6f6f',
+            gradientEnd: '#6a6a6a',
+        });
+    }
 });
 
 /* ── Start Alpine.js ── */
 Alpine.start();
+
