@@ -292,11 +292,335 @@ function escHtml(s) {
     </div>
 </section>
 
-<!-- Portfolio placeholder -->
-<section class="plain-section">
+<!-- Showcase Portfolio Gallery -->
+<style>
+    .gallery-upload-zone {
+        border: 2px dashed rgba(0, 128, 105, 0.25);
+        border-radius: 1rem;
+        background: rgba(0, 128, 105, 0.02);
+        padding: 30px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        margin-bottom: 24px;
+    }
+    .gallery-upload-zone:hover, .gallery-upload-zone.dragover {
+        border-color: #008069;
+        background: rgba(0, 128, 105, 0.05);
+    }
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+    }
+    .gallery-item {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        aspect-ratio: 3/2;
+        border: 1px solid #d8d8d8;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        group: hover;
+    }
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    .gallery-item:hover img {
+        transform: scale(1.06);
+    }
+    .gallery-item-delete {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease, background 0.2s ease;
+        font-weight: 800;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .gallery-item:hover .gallery-item-delete {
+        opacity: 1;
+    }
+    .gallery-item-delete:hover {
+        background: rgba(220, 38, 38, 1);
+    }
+    
+    /* Lightbox Modal styles */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        z-index: 99999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 80%;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .lightbox-close {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 300;
+        cursor: pointer;
+        user-select: none;
+    }
+</style>
+
+<section class="plain-section" id="portfolio-gallery-section">
     <div class="panel" style="padding: 24px;">
-        <h3>Portfolio Images</h3>
-        <p class="plain-muted">Portfolio image upload will be available in a future update. Your work samples will be displayed to event planners here.</p>
+        <h3>Business Portfolio Showcase</h3>
+        <p class="plain-muted" style="margin-bottom: 20px;">Upload samples of your best work (decoration designs, photography, catering spreads, venue halls) to wow event planners.</p>
+
+        @if($vendor)
+            <!-- Multi uploader -->
+            <div id="gallery-drop-zone" class="gallery-upload-zone" onclick="document.getElementById('gallery-images-input').click()">
+                <span style="font-size: 2.2rem; display: block; margin-bottom: 8px;">📸</span>
+                <span style="font-weight: 700; font-size: 0.95rem; color: #111b21;">Drag & Drop work photos here, or click to browse</span>
+                <span style="font-size: 0.75rem; display: block; color: #667781; margin-top: 4px;">Supports JPG, PNG, and WEBP up to 5MB each (upload multiple at once)</span>
+                <input type="file" id="gallery-images-input" multiple style="display: none;" accept="image/*" onchange="handleGallerySelect(event)">
+            </div>
+
+            <!-- Upload progress -->
+            <div id="gallery-progress-container" style="display: none; margin-bottom: 20px; background: #f0f0f0; border-radius: 8px; padding: 12px; border: 1px solid #d8d8d8;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; font-weight: 700;">
+                    <span id="gallery-progress-text" style="color: #008069;">Uploading showcase files...</span>
+                    <span id="gallery-progress-percent">0%</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                    <div id="gallery-progress-fill" style="width: 0%; height: 100%; background: #008069; transition: width 0.15s ease;"></div>
+                </div>
+            </div>
+
+            <!-- Showcase Gallery Grid -->
+            <div class="gallery-grid" id="vendor-showcase-grid">
+                @php
+                    $uploadedImages = $vendor->galleryImages;
+                @endphp
+                
+                @if($uploadedImages->isEmpty())
+                    <div id="empty-gallery-state" style="grid-column: 1 / -1; text-align: center; padding: 32px 16px; color: #888; border: 1px dashed #d8d8d8; border-radius: 12px; background: #fafafa;">
+                        <p style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px;">Your showcase portfolio is empty.</p>
+                        <p style="font-size: 0.85rem; margin: 0;">Drag and drop work photos above to start building your gallery.</p>
+                    </div>
+                @else
+                    @foreach($uploadedImages as $gImg)
+                        <div class="gallery-item" id="gallery-item-{{ $gImg->id }}">
+                            <img src="{{ asset('storage/' . $gImg->image_path) }}" alt="Showcase Image" onclick="openLightbox(this.src)">
+                            <button type="button" class="gallery-item-delete" title="Delete image" onclick="deleteGalleryImage('{{ $gImg->id }}')">×</button>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        @else
+            <div style="text-align: center; padding: 24px; border: 1px dashed #d97706; background: rgba(245, 158, 11, 0.04); border-radius: 12px; color: #b45309;">
+                <strong>Please fill and save your Business Profile details first before uploading portfolio showcase images.</strong>
+            </div>
+        @endif
     </div>
 </section>
+
+<!-- Lightbox Modal -->
+<div id="gallery-lightbox" class="lightbox-modal" onclick="closeLightbox()">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <img class="lightbox-content" id="lightbox-image" src="" alt="Showcase Preview" onclick="event.stopPropagation()">
+</div>
+
+<script>
+    const galleryDropZone = document.getElementById('gallery-drop-zone');
+    const galleryCsrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    if (galleryDropZone) {
+        // Drag and drop events
+        ['dragenter', 'dragover'].forEach(eventName => {
+            galleryDropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                galleryDropZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            galleryDropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                galleryDropZone.classList.remove('dragover');
+            }, false);
+        });
+
+        galleryDropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                uploadGalleryImages(files);
+            }
+        }, false);
+    }
+
+    function handleGallerySelect(event) {
+        const files = event.target.files;
+        if (files.length > 0) {
+            uploadGalleryImages(files);
+        }
+    }
+
+    /**
+     * AJAX Upload Showcase Images.
+     */
+    function uploadGalleryImages(files) {
+        const formData = new FormData();
+        let imageCount = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].type.match('image.*')) {
+                formData.append('images[]', files[i]);
+                imageCount++;
+            }
+        }
+
+        if (imageCount === 0) {
+            alert('Please select valid work image files (JPG, PNG, or WEBP).');
+            return;
+        }
+
+        const progContainer = document.getElementById('gallery-progress-container');
+        const progFill = document.getElementById('gallery-progress-fill');
+        const progText = document.getElementById('gallery-progress-text');
+        const progPercent = document.getElementById('gallery-progress-percent');
+
+        progContainer.style.display = 'block';
+        progFill.style.width = '0%';
+        progPercent.textContent = '0%';
+        progText.textContent = `Uploading ${imageCount} showcase photo(s)...`;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ route("vendor.gallery.upload") }}', true);
+        xhr.setRequestHeader('X-CSRF-TOKEN', galleryCsrf);
+        xhr.setRequestHeader('Accept', 'application/json');
+
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progFill.style.width = percent + '%';
+                progPercent.textContent = percent + '%';
+            }
+        };
+
+        xhr.onload = function() {
+            progContainer.style.display = 'none';
+            if (xhr.status === 200) {
+                try {
+                    const res = JSON.parse(xhr.responseText);
+                    if (res.success && res.images) {
+                        const grid = document.getElementById('vendor-showcase-grid');
+                        const emptyState = document.getElementById('empty-gallery-state');
+                        
+                        if (emptyState) emptyState.remove();
+
+                        res.images.forEach(img => {
+                            const item = document.createElement('div');
+                            item.className = 'gallery-item';
+                            item.id = `gallery-item-${img.id}`;
+                            item.innerHTML = `
+                                <img src="${img.url}" alt="Showcase Image" onclick="openLightbox(this.src)">
+                                <button type="button" class="gallery-item-delete" title="Delete image" onclick="deleteGalleryImage('${img.id}')">×</button>
+                            `;
+                            grid.appendChild(item);
+                        });
+                    }
+                } catch(e) {
+                    alert('Upload was successful but failed to parse responses.');
+                }
+            } else {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    alert(response.message || 'Failed to upload portfolio images.');
+                } catch(e) {
+                    alert('An error occurred during portfolio upload.');
+                }
+            }
+        };
+
+        xhr.onerror = function() {
+            progContainer.style.display = 'none';
+            alert('An error occurred during upload.');
+        };
+
+        xhr.send(formData);
+    }
+
+    /**
+     * AJAX Delete Showcase Image.
+     */
+    function deleteGalleryImage(id) {
+        if (!confirm('Are you sure you want to delete this showcase image from your portfolio?')) return;
+
+        fetch(`/vendor/gallery/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': galleryCsrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const item = document.getElementById(`gallery-item-${id}`);
+                if (item) {
+                    item.remove();
+                }
+
+                // If grid is empty, show empty state
+                const grid = document.getElementById('vendor-showcase-grid');
+                if (grid && grid.querySelectorAll('.gallery-item').length === 0) {
+                    grid.innerHTML = `
+                        <div id="empty-gallery-state" style="grid-column: 1 / -1; text-align: center; padding: 32px 16px; color: #888; border: 1px dashed #d8d8d8; border-radius: 12px; background: #fafafa;">
+                            <p style="font-size: 1.05rem; font-weight: 600; margin-bottom: 4px;">Your showcase portfolio is empty.</p>
+                            <p style="font-size: 0.85rem; margin: 0;">Drag and drop work photos above to start building your gallery.</p>
+                        </div>
+                    `;
+                }
+            } else {
+                alert(data.error || 'Failed to delete portfolio image.');
+            }
+        })
+        .catch(() => {
+            alert('An error occurred.');
+        });
+    }
+
+    /* ── Lightbox Logic ── */
+    function openLightbox(src) {
+        const lightbox = document.getElementById('gallery-lightbox');
+        const img = document.getElementById('lightbox-image');
+        img.src = src;
+        lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+        document.getElementById('gallery-lightbox').style.display = 'none';
+    }
+</script>
 @endsection
