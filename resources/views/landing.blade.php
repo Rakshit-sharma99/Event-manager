@@ -6,25 +6,25 @@
 {{-- ═══════════════════════════════════════════════════════════════
      HERO SECTION
      ═══════════════════════════════════════════════════════════════ --}}
-<section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-cover bg-center bg-no-repeat" style="background-image: linear-gradient(to right, rgba(255, 255, 255, 0.95) 40%, rgba(255, 255, 255, 0.8) 70%, rgba(255, 255, 255, 0.3) 100%), url('{{ asset('images/hero-bg.jpg') }}');">
+<section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-cover bg-center bg-no-repeat" style="background-image: linear-gradient(135deg, rgba(248, 248, 252, 0.9) 0%, rgba(248, 248, 252, 0.8) 50%, rgba(248, 248, 252, 0.6) 100%), url('{{ asset('images/hero-bg.jpg') }}');">
     {{-- Radial gradient bloom --}}
     <div class="absolute top-1/4 left-1/3 w-[600px] h-[600px] rounded-full bg-primary-500/5 blur-[120px] pointer-events-none"></div>
     <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-accent/5 blur-[100px] pointer-events-none"></div>
 
     <div class="section flex flex-col lg:flex-row items-center gap-12 lg:gap-20 py-12">
         {{-- Left — Text --}}
-        <div class="flex-1 max-w-xl" data-animate="fade-up">
+        <div class="flex-1 max-w-xl bg-white/80 backdrop-blur-md border border-white/50 p-8 sm:p-10 rounded-xl shadow-lg" data-animate="fade-up">
             <h1 class="text-[clamp(2.5rem,5vw,3.5rem)] font-extrabold leading-[1.1] tracking-tight text-neutral-dark mb-6">
                 Plan. Manage.<br>
                 <span class="text-gradient">Celebrate.</span>
             </h1>
-            <p class="text-body-lg text-surface-500 mb-8 max-w-md leading-relaxed">
+            <p class="text-body-lg text-surface-600 mb-8 max-w-md leading-relaxed">
                 The premium event management platform for unforgettable experiences. From intimate gatherings to grand celebrations.
             </p>
             <div class="flex flex-wrap gap-4">
-                <x-btn href="{{ route('register') }}" size="lg">Get Started Free</x-btn>
+                <x-btn href="{{ route('register') }}" size="lg" class="shadow-glow">Get Started Free</x-btn>
                 <x-btn variant="ghost" href="#how-it-works" size="lg">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Watch Demo
                 </x-btn>
             </div>
@@ -33,26 +33,28 @@
         {{-- Right — 3D Card Mockup --}}
         <div class="flex-1 flex justify-center" data-animate="fade-up">
             <div class="relative w-80 h-96" style="perspective: 800px;">
-                <div class="absolute inset-0 rounded-xl bg-brand-gradient shadow-lg p-6 text-white animate-float"
+                <div class="absolute inset-0 rounded-xl bg-neutral-dark/85 backdrop-blur-lg border border-white/10 shadow-2xl p-6 text-white animate-float"
                      style="transform: rotateY(-8deg) rotateX(4deg);">
-                    <div class="flex items-center gap-2 mb-4">
+                    <div class="flex items-center gap-2 mb-4 text-primary-400">
                         <span class="text-lg">✦</span>
-                        <span class="text-body font-bold">Event Preview</span>
+                        <span class="text-body font-bold uppercase tracking-wider text-[11px] text-white/90">Event Preview</span>
                     </div>
-                    <div class="w-full h-32 rounded-lg bg-white/15 backdrop-blur-sm mb-4 flex items-center justify-center text-4xl">🎊</div>
-                    <h4 class="text-h4 font-bold mb-1">Summer Gala 2026</h4>
-                    <p class="text-caption opacity-75 mb-3">Jun 15, 2026 • The Grand Ballroom</p>
-                    <div class="flex items-center gap-4 text-caption opacity-60">
+                    <div class="w-full h-32 rounded-lg mb-4 overflow-hidden border border-white/10">
+                        <img src="{{ asset('images/summer_gala.png') }}" alt="Summer Gala" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="text-h4 font-bold mb-1 text-white">Summer Gala 2026</h4>
+                    <p class="text-caption text-white/70 mb-3">Jun 15, 2026 • The Grand Ballroom</p>
+                    <div class="flex items-center gap-4 text-caption text-white/60">
                         <span>👥 250 guests</span>
                         <span>📋 12 tasks</span>
                     </div>
                     <div class="mt-4 flex gap-2">
-                        <span class="px-3 py-1 rounded-full bg-white/20 text-caption font-semibold">Upcoming</span>
-                        <span class="px-3 py-1 rounded-full bg-white/10 text-caption">8 vendors</span>
+                        <x-badge variant="active" class="uppercase text-[9px] tracking-wider py-0.5 px-2 bg-success/20 text-success border border-success/30">Upcoming</x-badge>
+                        <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-bold">8 vendors</span>
                     </div>
                 </div>
                 {{-- Shadow card behind --}}
-                <div class="absolute inset-0 rounded-xl bg-primary-200/30 blur-sm -z-10" style="transform: rotateY(-12deg) rotateX(6deg) translateZ(-30px);"></div>
+                <div class="absolute inset-0 rounded-xl bg-primary-500/20 blur-md -z-10" style="transform: rotateY(-12deg) rotateX(6deg) translateZ(-30px);"></div>
             </div>
         </div>
     </div>
