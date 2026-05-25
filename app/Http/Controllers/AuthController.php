@@ -48,6 +48,17 @@ class AuthController extends Controller
             'phone' => $request->phone_number,
         ]);
 
+        // Pre-seed Vendor record with selected category when registering as vendor
+        if ($request->role === 'vendor' && $request->vendor_category) {
+            \App\Models\Vendor::create([
+                'user_id'   => (string) $user->getKey(),
+                'name'      => $request->name,
+                'category'  => $request->vendor_category,
+                'location'  => $request->residence ?? '',
+                'base_location' => $request->residence ?? '',
+            ]);
+        }
+
         Auth::login($user);
 
         // Send welcome email

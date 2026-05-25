@@ -140,6 +140,7 @@ class VendorDashboardController extends Controller
             'work_location' => ['required', 'string', 'max:100'],
             'budget_min' => ['required', 'numeric', 'min:0'],
             'budget_max' => ['required', 'numeric', 'min:0'],
+            'vendor_category' => ['required', 'string', 'max:60'],
             'speciality' => ['required', 'string', 'max:100'],
             'services_provided' => ['required', 'string', 'max:500'],
             'description' => ['nullable', 'string', 'max:2000'],
@@ -171,8 +172,8 @@ class VendorDashboardController extends Controller
                 'contact_number' => $data['contact_number'] ?? '',
                 'contact_email' => $data['contact_email'],
                 'portfolio_images' => [], // future-ready
-                // Populate legacy fields for backward compatibility
-                'category' => $data['speciality'],
+                // Category from dropdown, speciality is free-text sub-specialty
+                'category' => $data['vendor_category'],
                 'location' => $data['base_location'],
                 'price_min' => $data['budget_min'] ?? 0,
                 'price_max' => $data['budget_max'] ?? 0,

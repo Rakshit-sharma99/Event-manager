@@ -32,12 +32,24 @@
             </div>
             <div>
                 <label>I am a...</label>
-                <select name="role">
+                <select name="role" id="reg-role" onchange="toggleVendorCategory()">
                     <option value="planner" {{ old('role', request('role')) === 'planner' ? 'selected' : '' }}>Event Planner</option>
                     <option value="vendor" {{ old('role', request('role')) === 'vendor' ? 'selected' : '' }}>Vendor</option>
                     <option value="guest" {{ old('role', request('role')) === 'guest' ? 'selected' : '' }}>Guest</option>
                 </select>
                 @error('role') <small class="otp-error">{{ $message }}</small> @enderror
+            </div>
+            <div id="vendor-category-field" style="display: none;">
+                <label>Service Category *</label>
+                <select name="vendor_category" id="reg-vendor-category">
+                    <option value="">-- Select your category --</option>
+                    @foreach(config('smart_budget.service_vendor_category_map', []) as $smartCat => $vendorCats)
+                        @php $catLabel = config("smart_budget.services.{$smartCat}.label", ucfirst(str_replace('_', ' ', $smartCat))); @endphp
+                        <option value="{{ $smartCat }}" {{ old('vendor_category') === $smartCat ? 'selected' : '' }}>{{ $catLabel }}</option>
+                    @endforeach
+                </select>
+                <small style="color: #666; font-size: 0.8rem;">Select the service category your business falls under</small>
+                @error('vendor_category') <small class="otp-error">{{ $message }}</small> @enderror
             </div>
             <div>
                 <label>Password</label>
@@ -53,5 +65,24 @@
         <button class="auth-submit" type="submit">Sign up</button>
         <p>Already registered? <a href="{{ route('login') }}">Login</a></p>
     </form>
+
+    <script>
+    function toggleVendorCategory() {
+        const role = document.getElementById('reg-role').value;
+        const field = document.getElementById('vendor-category-field');
+        const select = document.getElementById('reg-vendor-category');
+        if (role === 'vendor') {
+            field.style.display = '';
+            select.required = true;
+        } else {
+            field.style.display = 'none';
+            select.required = false;
+            select.value = '';
+        }
+    }
+    // Run on page load for old() state or direct URL parameter
+    document.addEventListener('DOMContentLoaded', toggleVendorCategory);
+    toggleVendorCategory();
+    </script>
 </section>
 @endsection

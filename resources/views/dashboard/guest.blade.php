@@ -41,7 +41,7 @@
         <div class="panel" style="padding: 24px;">
             <h3>Quick Actions</h3>
             <div class="plain-actions">
-                <a class="btn-ghost" href="{{ route('vendors.index') }}">Explore Vendors</a>
+                <a class="btn-ghost" href="{{ route('chat.index') }}">💬 Messages</a>
                 <a class="btn-ghost" href="{{ route('profile.edit') }}">Edit Profile</a>
             </div>
         </div>

@@ -431,24 +431,33 @@
         </div>
 
         <!-- Sticky Navigation tabs (placeholders) -->
-        <div class="sidebar-tabs">
-            <button class="sidebar-tab-btn active">All Chats</button>
-            <button class="sidebar-tab-btn" onclick="alert('Pinned chats features can be loaded dynamically in future upgrades.')">📌 Pinned</button>
-            <button class="sidebar-tab-btn" onclick="alert('Archived conversations feature placeholder.')">📥 Archived</button>
-        </div>
+        @if($user->role === 'planner')
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab-btn active" id="tab-guest" onclick="switchSidebarTab('guest')">Guests</button>
+                <button class="sidebar-tab-btn" id="tab-vendor" onclick="switchSidebarTab('vendor')">Vendors</button>
+            </div>
+        @endif
 
         <!-- Conversation Scroll list -->
         <div class="conv-list-scrollable" id="conv-list-container">
             <!-- Dynamic list populated via JS -->
             <div id="default-chat-list">
-                @if(empty($conversations))
+                @php
+                    $filteredInitialConvs = $conversations;
+                    if ($user->role === 'planner') {
+                        $filteredInitialConvs = array_filter($conversations, function($c) {
+                            return ($c['other_role'] ?? '') === 'guest';
+                        });
+                    }
+                @endphp
+                @if(empty($filteredInitialConvs))
                     <div class="whatsapp-empty-state" style="padding-top: 60px; background: none;">
                         <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">📭</span>
                         <p style="font-weight: 700; margin-bottom: 4px; color: #111b21;">No conversations yet</p>
                         <p style="font-size: 0.82rem;">Your active chats will appear here.</p>
                     </div>
                 @else
-                    @foreach($conversations as $conv)
+                    @foreach($filteredInitialConvs as $conv)
                         <div class="whatsapp-conv-item {{ ($activeBookingId ?? '') === $conv['booking_id'] ? 'active-chat' : '' }}" 
                              data-booking-id="{{ $conv['booking_id'] }}"
                              data-profile="{{ json_encode($conv['profile']) }}"
@@ -535,12 +544,8 @@
 
         <!-- Message Input Bar -->
         <div class="message-input-bar" id="chat-input-bar" style="display: none;">
-            <button class="chat-emoji-btn" title="Add Emojis (Placeholder)" onclick="alert('Emoji picker placeholder.')">😀</button>
-            <button class="chat-attachment-btn" title="Attach Files (Placeholder)" onclick="alert('File attachment placeholder.')">📎</button>
-            
             <input id="chat-msg-input" type="text" placeholder="Type a message..." autocomplete="off" onkeydown="if(event.key==='Enter'){sendMsg(); event.preventDefault();}">
-            
-            <button class="chat-voice-btn" title="Record Voice (Placeholder)" onclick="alert('Voice message recording placeholder.')">🎤</button>
+            <button onclick="sendMsg()" style="background: #008069; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#006b57'" onmouseout="this.style.background='#008069'">Send Message</button>
         </div>
     </div>
 
@@ -563,6 +568,8 @@ let activeThreadId = '{{ $activeBookingId ?? '' }}';
 let messagePollInterval = null;
 let sidebarPollInterval = null;
 let searchDebounceTimer = null;
+let currentSidebarTab = '{{ $user->role === "planner" ? "guest" : "all" }}';
+let allConversations = @json($conversations);
 
 /* ── Mobile Back Control ── */
 function closeActiveChatOnMobile(event) {
@@ -630,12 +637,19 @@ function executeSearch() {
         
         const chatListContainer = document.getElementById('search-chats-results-list');
         const guestListContainer = document.getElementById('search-guests-results-list');
+        const guestsGroup = document.getElementById('search-invited-guests-group');
+        
+        // Filter existing chats results based on active tab
+        let filteredChats = data.chats;
+        if (currentSidebarTab !== 'all') {
+            filteredChats = data.chats.filter(conv => conv.other_role === currentSidebarTab);
+        }
         
         // Populate Existing Chats matches
-        if (data.chats.length === 0) {
+        if (filteredChats.length === 0) {
             chatListContainer.innerHTML = '<p class="plain-muted" style="padding: 12px 16px; margin: 0; font-size: 0.85rem; color:#888;">No active chats match your query.</p>';
         } else {
-            chatListContainer.innerHTML = data.chats.map(conv => `
+            chatListContainer.innerHTML = filteredChats.map(conv => `
                 <div class="whatsapp-conv-item ${activeThreadId === conv.booking_id ? 'active-chat' : ''}" 
                      onclick="selectConversation('${conv.booking_id}')">
                     <div class="avatar-badge">
@@ -655,44 +669,49 @@ function executeSearch() {
             `).join('');
         }
         
-        // Populate Uncontacted Invited Guests
-        if (data.guests.length === 0) {
-            guestListContainer.innerHTML = '<p class="plain-muted" style="padding: 12px 16px; margin: 0; font-size: 0.85rem; color:#888;">No uncontacted guests found.</p>';
+        // Populate Uncontacted Invited Guests (only show if active tab is guest or all)
+        if (currentSidebarTab === 'vendor') {
+            if (guestsGroup) guestsGroup.style.display = 'none';
         } else {
-            guestListContainer.innerHTML = data.guests.map(guest => {
-                let actionHtml = '';
-                
-                if (guest.is_active || guest.rsvp_status === 'yes' || guest.rsvp_status === 'maybe') {
-                    // Active or RSVP accepted: ready to chat
-                    actionHtml = `<button class="btn-start-chat-search" onclick="startNewChat('${guest.id}')">Start Chat</button>`;
-                } else {
-                    // Inactive and no RSVP: invite needed
-                    actionHtml = `
-                        <div class="uncontacted-action-panel">
-                            <span class="uncontacted-status-badge">Guest not active yet</span>
-                            <button class="btn-invite-register" id="btn-inv-${guest.id}" onclick="sendAccountInvite('${guest.id}')">Send Invitation</button>
+            if (guestsGroup) guestsGroup.style.display = 'block';
+            if (data.guests.length === 0) {
+                guestListContainer.innerHTML = '<p class="plain-muted" style="padding: 12px 16px; margin: 0; font-size: 0.85rem; color:#888;">No uncontacted guests found.</p>';
+            } else {
+                guestListContainer.innerHTML = data.guests.map(guest => {
+                    let actionHtml = '';
+                    
+                    if (guest.is_active || guest.rsvp_status === 'yes' || guest.rsvp_status === 'maybe') {
+                        // Active or RSVP accepted: ready to chat
+                        actionHtml = `<button class="btn-start-chat-search" onclick="startNewChat('${guest.id}')">Start Chat</button>`;
+                    } else {
+                        // Inactive and no RSVP: invite needed
+                        actionHtml = `
+                            <div class="uncontacted-action-panel">
+                                <span class="uncontacted-status-badge">Guest not active yet</span>
+                                <button class="btn-invite-register" id="btn-inv-${guest.id}" onclick="sendAccountInvite('${guest.id}')">Send Invitation</button>
+                            </div>
+                        `;
+                    }
+                    
+                    return `
+                        <div class="whatsapp-conv-item" style="cursor: default;">
+                            <div class="avatar-badge">
+                                ${esc(guest.name.substring(0, 1))}
+                            </div>
+                            <div class="conv-details">
+                                <div class="conv-row-1">
+                                    <span class="conv-name" style="font-weight: 700;">${esc(guest.name)}</span>
+                                </div>
+                                <div style="font-size: 0.8rem; color:#667781; margin-top:2px;">Event: ${esc(guest.event_name)}</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 8px;">
+                                    <span style="font-size: 0.8rem; color:#667781;">RSVP: <strong>${esc(guest.rsvp_status.toUpperCase())}</strong></span>
+                                    ${actionHtml}
+                                </div>
+                            </div>
                         </div>
                     `;
-                }
-                
-                return `
-                    <div class="whatsapp-conv-item" style="cursor: default;">
-                        <div class="avatar-badge">
-                            ${esc(guest.name.substring(0, 1))}
-                        </div>
-                        <div class="conv-details">
-                            <div class="conv-row-1">
-                                <span class="conv-name" style="font-weight: 700;">${esc(guest.name)}</span>
-                            </div>
-                            <div style="font-size: 0.8rem; color:#667781; margin-top:2px;">Event: ${esc(guest.event_name)}</div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 8px;">
-                                <span style="font-size: 0.8rem; color:#667781;">RSVP: <strong>${esc(guest.rsvp_status.toUpperCase())}</strong></span>
-                                ${actionHtml}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                }).join('');
+            }
         }
     })
     .catch(() => {});
@@ -972,6 +991,72 @@ function sendMsg() {
     });
 }
 
+/* ── Render filtered default conversations list ── */
+function renderConversations(conversations) {
+    const container = document.getElementById('default-chat-list');
+    
+    // Filter conversations based on current tab if user is a planner
+    let filtered = conversations;
+    if (currentSidebarTab !== 'all') {
+        filtered = conversations.filter(conv => conv.other_role === currentSidebarTab);
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="whatsapp-empty-state" style="padding-top: 60px; background: none;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">📭</span>
+                <p style="font-weight: 700; margin-bottom: 4px; color: #111b21;">No conversations yet</p>
+                <p style="font-size: 0.82rem;">Your active chats will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filtered.map(conv => `
+        <div class="whatsapp-conv-item ${activeThreadId === conv.booking_id ? 'active-chat' : ''}" 
+             data-booking-id="${conv.booking_id}"
+             data-profile="${escAttr(JSON.stringify(conv.profile))}"
+             onclick="selectConversation('${conv.booking_id}')">
+            
+            <div class="avatar-badge">
+                ${esc(conv.other_name.substring(0, 1))}
+            </div>
+
+            <div class="conv-details">
+                <div class="conv-row-1">
+                    <span class="conv-name">${esc(conv.other_name)}</span>
+                    <span class="conv-time">${esc(conv.last_time)}</span>
+                </div>
+                <div class="conv-row-2">
+                    <span class="conv-last-msg">${esc(conv.last_message || 'No messages yet')}</span>
+                    ${conv.message_count > 0 ? `<span class="conv-unread-badge">${conv.message_count}</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ── Switch Sidebar Tab ── */
+function switchSidebarTab(tab) {
+    currentSidebarTab = tab;
+    
+    // Update active class on tab buttons
+    document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.getElementById('tab-' + tab);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    // Rerender filtered default chat list
+    renderConversations(allConversations);
+    
+    // If search is active, execute it again to respect current tab filtering
+    const q = document.getElementById('whatsapp-search-input').value.trim();
+    if (q.length > 0) {
+        executeSearch();
+    }
+}
+
 /* ── Load Sidebar Conversation list (AJAX) ── */
 function loadSidebarConversations() {
     return fetch('/threads/conversations', {
@@ -979,44 +1064,13 @@ function loadSidebarConversations() {
     })
     .then(r => r.json())
     .then(conversations => {
+        allConversations = conversations;
+        
         // Only update if search bar is empty
         const q = document.getElementById('whatsapp-search-input').value.trim();
         if (q.length > 0) return;
         
-        const container = document.getElementById('default-chat-list');
-        if (conversations.length === 0) {
-            container.innerHTML = `
-                <div class="whatsapp-empty-state" style="padding-top: 60px; background: none;">
-                    <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">📭</span>
-                    <p style="font-weight: 700; margin-bottom: 4px; color: #111b21;">No conversations yet</p>
-                    <p style="font-size: 0.82rem;">Your active chats will appear here.</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = conversations.map(conv => `
-            <div class="whatsapp-conv-item ${activeThreadId === conv.booking_id ? 'active-chat' : ''}" 
-                 data-booking-id="${conv.booking_id}"
-                 data-profile="${escAttr(JSON.stringify(conv.profile))}"
-                 onclick="selectConversation('${conv.booking_id}')">
-                
-                <div class="avatar-badge">
-                    ${esc(conv.other_name.substring(0, 1))}
-                </div>
-
-                <div class="conv-details">
-                    <div class="conv-row-1">
-                        <span class="conv-name">${esc(conv.other_name)}</span>
-                        <span class="conv-time">${esc(conv.last_time)}</span>
-                    </div>
-                    <div class="conv-row-2">
-                        <span class="conv-last-msg">${esc(conv.last_message || 'No messages yet')}</span>
-                        ${conv.message_count > 0 ? `<span class="conv-unread-badge">${conv.message_count}</span>` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
+        renderConversations(allConversations);
     })
     .catch(() => {});
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\VendorDashboardController;
+use App\Http\Controllers\SmartBudgetController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'landing'])->name('landing');
@@ -133,6 +134,14 @@ Route::middleware(['auth', 'jwt.session'])->group(function () {
         Route::delete('/budget/expense/{id}', [BudgetController::class, 'deleteExpense'])->name('budget.expense.destroy');
         Route::get('/api/budget/{eventId}/chart', [BudgetController::class, 'chart'])->name('api.budget.chart');
         Route::get('/api/budget/{eventId}/alerts', [BudgetController::class, 'alerts'])->name('api.budget.alerts');
+
+        // Smart Budget Planner
+        Route::get('/events/{id}/smart-budget', [SmartBudgetController::class, 'index'])->name('smart-budget.index');
+        Route::post('/events/{id}/smart-budget/generate', [SmartBudgetController::class, 'generate'])->name('smart-budget.generate');
+        Route::post('/events/{id}/smart-budget/priorities', [SmartBudgetController::class, 'updatePriorities'])->name('smart-budget.priorities');
+        Route::get('/events/{id}/smart-budget/recommendations', [SmartBudgetController::class, 'recommendations'])->name('smart-budget.recommendations');
+        Route::get('/events/{id}/smart-budget/tracking', [SmartBudgetController::class, 'trackBudget'])->name('smart-budget.tracking');
+        Route::get('/events/{id}/smart-budget/savings', [SmartBudgetController::class, 'savings'])->name('smart-budget.savings');
 
         Route::get('/events/{id}/guests', [GuestController::class, 'index'])->name('guests.index');
         Route::get('/events/{id}/guests/create', [GuestController::class, 'create'])->name('guests.create');

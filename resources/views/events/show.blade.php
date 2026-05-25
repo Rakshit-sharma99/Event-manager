@@ -13,6 +13,7 @@
     <div class="plain-actions">
         <a class="btn-primary" href="{{ route('guests.index', $event) }}">Guests</a>
         <a class="btn-ghost" href="{{ route('vendors.index') }}">Find vendors</a>
+        <a class="btn-ghost" href="{{ route('smart-budget.index', $event) }}">🧠 Smart Budget</a>
         <a class="btn-ghost" href="{{ route('bookings.timeline', $event) }}">Timeline</a>
         <a class="btn-ghost" href="{{ route('events.edit', $event) }}">Edit</a>
     </div>

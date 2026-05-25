@@ -18,6 +18,7 @@ class EventRequest extends FormRequest
             'guest_count_expected' => ['required', 'integer', 'min:1'],
             'total_budget' => ['required', 'numeric', 'min:1000'],
             'theme' => ['nullable', 'string', 'max:80'],
+            'luxury_level' => ['nullable', 'in:budget,balanced,premium,luxury'],
             'status' => ['nullable', 'in:planning,confirmed,completed'],
             'banner' => ['nullable', 'image', 'max:4096'],
         ];

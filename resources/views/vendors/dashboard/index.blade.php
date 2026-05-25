@@ -246,8 +246,20 @@ function escHtml(s) {
                     @error('budget_max') <small class="otp-error">{{ $message }}</small> @enderror
                 </div>
                 <div>
+                    <label for="vendor-category">Service Category *</label>
+                    <select id="vendor-category" name="vendor_category" required>
+                        <option value="">-- Select your category --</option>
+                        @foreach(config('smart_budget.service_vendor_category_map', []) as $smartCat => $vendorCats)
+                            @php $catLabel = config("smart_budget.services.{$smartCat}.label", ucfirst(str_replace('_', ' ', $smartCat))); @endphp
+                            <option value="{{ $smartCat }}" {{ old('vendor_category', $vendor->category ?? '') === $smartCat ? 'selected' : '' }}>{{ $catLabel }}</option>
+                        @endforeach
+                    </select>
+                    @error('vendor_category') <small class="otp-error">{{ $message }}</small> @enderror
+                </div>
+                <div>
                     <label for="vendor-speciality">Speciality *</label>
-                    <input id="vendor-speciality" name="speciality" value="{{ old('speciality', $vendor->speciality ?? '') }}" required placeholder="e.g. Wedding Photography">
+                    <input id="vendor-speciality" name="speciality" value="{{ old('speciality', $vendor->speciality ?? '') }}" required placeholder="e.g. Wedding Photography, Candid Shots">
+                    <small class="plain-muted">Describe your specific expertise within the category</small>
                     @error('speciality') <small class="otp-error">{{ $message }}</small> @enderror
                 </div>
                 <div>

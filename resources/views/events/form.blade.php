@@ -14,13 +14,14 @@
         <div><label class="field-label">Venue</label><input class="w-full" name="venue_name" value="{{ old('venue_name',$event->venue_name) }}"></div>
         <div><label class="field-label">Expected guests</label><input class="w-full" name="guest_count_expected" type="number" value="{{ old('guest_count_expected',$event->guest_count_expected ?? 150) }}" required></div>
         <div><label class="field-label">Total budget</label><input class="w-full" name="total_budget" type="number" value="{{ old('total_budget',$event->total_budget ?? 500000) }}" required></div>
+        <div><label class="field-label">Luxury level</label><select class="w-full" name="luxury_level">@foreach(['budget' => 'Budget', 'balanced' => 'Balanced', 'premium' => 'Premium', 'luxury' => 'Luxury'] as $val => $lbl)<option value="{{ $val }}" @selected(old('luxury_level',$event->luxury_level ?? 'balanced')===$val)>{{ $lbl }}</option>@endforeach</select></div>
         <div><label class="field-label">Theme</label><input class="w-full" name="theme" value="{{ old('theme',$event->theme ?? 'Celestial Blue') }}"></div>
         <div><label class="field-label">Banner</label><input class="w-full" name="banner" type="file"></div>
         <div class="sm:col-span-2"><button class="btn-primary">{{ $event->exists ? 'Save changes' : 'Create event' }}</button></div>
     </div>
     <aside class="glass rounded-[2rem] p-6" data-reveal>
         <h3 class="font-display text-2xl font-bold">Budget preset</h3>
-        <p class="mt-2 text-white/55">Eventra automatically creates category budgets for catering, photography, decor, music, venue, florals, and misc after save.</p>
+        <p class="mt-2 text-white/55">Eventra automatically creates category budgets after save. For intelligent, AI-powered allocation use the <strong>🧠 Smart Budget Planner</strong> from your event page.</p>
         <div class="mt-6 space-y-3">
             @foreach(['Catering 32%','Decoration 20%','Photography 16%','Music 10%','Venue 10%','Florals 8%','Misc 4%'] as $row)
                 <div class="flex items-center justify-between rounded-2xl bg-white/[.04] p-3"><span>{{ $row }}</span><i data-lucide="sparkle" class="h-4 w-4 text-eventra-cyan"></i></div>

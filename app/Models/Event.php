@@ -59,4 +59,14 @@ class Event extends BaseModel
     {
         return $this->hasMany(Gallery::class, 'event_id');
     }
+
+    public function serviceSelections()
+    {
+        return $this->hasMany(EventServiceSelection::class, 'event_id');
+    }
+
+    public function budgetAllocations()
+    {
+        return $this->hasMany(EventBudgetAllocation::class, 'event_id');
+    }
 }

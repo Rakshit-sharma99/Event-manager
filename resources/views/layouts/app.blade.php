@@ -80,6 +80,8 @@
                             href="{{ route('tasks.index', $activeEvent) }}">Tasks</a>
                         <a class="nav-item {{ request()->routeIs('budget.*') ? 'active' : '' }}"
                             href="{{ route('budget.index', $activeEvent) }}">Budget</a>
+                        <a class="nav-item {{ request()->routeIs('smart-budget.*') ? 'active' : '' }}"
+                            href="{{ route('smart-budget.index', $activeEvent) }}">🧠 Smart Budget</a>
                         <a class="nav-item {{ request()->routeIs('gallery.*') ? 'active' : '' }}"
                             href="{{ route('gallery.index', $activeEvent) }}">Gallery</a>
                     @endif
@@ -101,10 +103,8 @@
                 @elseif($user?->role === 'guest')
                     <a class="nav-item {{ request()->routeIs('guest.dashboard') ? 'active' : '' }}"
                         href="{{ route('guest.dashboard') }}">Dashboard</a>
-                    <a class="nav-item {{ request()->routeIs('vendors.*') && !request()->routeIs('vendors.favorites') ? 'active' : '' }}"
-                        href="{{ route('vendors.index') }}">Explore Vendors</a>
-                    <a class="nav-item {{ request()->routeIs('vendors.favorites') ? 'active' : '' }}"
-                        href="{{ route('vendors.favorites') }}">Favorites</a>
+                    <a class="nav-item {{ request()->routeIs('chat.*') ? 'active' : '' }}"
+                        href="{{ route('chat.index') }}">💬 Messages</a>
                 @endif
 
                 <div class="sidebar-divider"></div>
