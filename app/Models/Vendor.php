@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\HasAvatar;
+
 class Vendor extends BaseModel
 {
+    use HasAvatar;
+
     protected $collection = 'vendors';
 
     protected $fillable = [
@@ -49,5 +53,24 @@ class Vendor extends BaseModel
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'vendor_id');
+    }
+
+    /**
+     * Relationship to custom uploaded portfolio gallery images.
+     */
+    public function galleryImages()
+    {
+        return $this->hasMany(VendorGalleryImage::class, 'vendor_id')->orderBy('sort_order');
+    }
+
+    /**
+     * Merge uploaded and legacy seeded gallery images.
+     */
+    public function getAllGalleryImagesAttribute(): array
+    {
+        $uploaded = $this->galleryImages()->pluck('image_path')->map(fn($path) => asset('storage/' . $path))->all();
+        $seeded = $this->gallery ?? [];
+        
+        return array_merge($uploaded, $seeded);
     }
 }

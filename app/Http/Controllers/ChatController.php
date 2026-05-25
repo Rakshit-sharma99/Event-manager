@@ -212,10 +212,11 @@ class ChatController extends Controller
 
                 $lastMsg = ChatMessage::where('thread_id', (string) $thread->getKey())->orderByDesc('created_at')->first();
 
-                $chats[] = [
+                 $chats[] = [
                     'booking_id' => (string) $thread->getKey(),
                     'other_name' => $guest->name,
                     'other_role' => 'guest',
+                    'other_avatar' => $guest->avatar_url,
                     'event_name' => $event?->event_name ?? 'Event',
                     'status' => $guest->rsvp_status ?? 'pending',
                     'last_message' => $lastMsg?->message ?? '',
@@ -229,6 +230,7 @@ class ChatController extends Controller
                     'id' => (string) $guest->getKey(),
                     'name' => $guest->name,
                     'email' => $guest->email,
+                    'avatar_url' => $guest->avatar_url,
                     'event_name' => $event?->event_name ?? 'Event',
                     'rsvp_status' => $guest->rsvp_status ?? 'pending',
                     'is_active' => $userExists,
@@ -357,6 +359,7 @@ class ChatController extends Controller
                     'booking_id' => (string) $thread->getKey(),
                     'other_name' => $otherName,
                     'other_role' => 'planner',
+                    'other_avatar' => $planner?->avatar_url,
                     'event_name' => $event?->event_name ?? 'Unknown Event',
                     'status' => $booking->status,
                     'last_message' => $lastMsg?->message ?? '',
@@ -401,6 +404,7 @@ class ChatController extends Controller
                     'booking_id' => (string) $thread->getKey(),
                     'other_name' => $otherName,
                     'other_role' => 'planner',
+                    'other_avatar' => $planner?->avatar_url,
                     'event_name' => $event?->event_name ?? 'Unknown Event',
                     'status' => $guest->rsvp_status ?? 'pending',
                     'last_message' => $lastMsg?->message ?? '',
@@ -456,6 +460,7 @@ class ChatController extends Controller
                         'booking_id' => (string) $thread->getKey(),
                         'other_name' => $otherName,
                         'other_role' => 'vendor',
+                        'other_avatar' => $vendor?->avatar_url,
                         'event_name' => $event?->event_name ?? 'Unknown Event',
                         'status' => $booking->status,
                         'last_message' => $lastMsg?->message ?? '',
@@ -501,6 +506,7 @@ class ChatController extends Controller
                         'booking_id' => (string) $thread->getKey(),
                         'other_name' => $otherName,
                         'other_role' => 'guest',
+                        'other_avatar' => $guest?->avatar_url,
                         'event_name' => $event?->event_name ?? 'Unknown Event',
                         'status' => $guest->rsvp_status ?? 'pending',
                         'last_message' => $lastMsg?->message ?? '',

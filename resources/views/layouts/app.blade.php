@@ -50,7 +50,14 @@
     <div class="app-shell">
         <aside class="app-sidebar">
             <h2><a href="{{ route('dashboard') }}">Eventra</a></h2>
-            <p class="plain-muted">{{ ucfirst($user?->role ?? 'user') }} Panel</p>
+            
+            <div style="display: flex; align-items: center; gap: 12px; margin: 16px 0; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);">
+                <img src="{{ $user?->avatar_url }}" alt="Avatar" id="sidebar-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc; flex-shrink: 0;">
+                <div style="min-width: 0; flex: 1;">
+                    <strong style="display: block; font-size: 0.9rem; color: #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $user?->name }}</strong>
+                    <span style="font-size: 0.72rem; color: #666; font-weight: 700; text-transform: uppercase;">{{ $user?->role }}</span>
+                </div>
+            </div>
 
             <nav>
                 {{-- ── PLANNER SIDEBAR ── --}}
@@ -119,11 +126,19 @@
         </aside>
 
         <main class="app-main-panel">
-            <header class="app-topbar">
-                <h1>@yield('page-title', 'Backend Dashboard')</h1>
-                <p class="plain-muted">
-                    {{ $user?->name }} ({{ ucfirst($user?->role ?? 'user') }})
-                </p>
+            <header class="app-topbar" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
+                <div>
+                    <h1 style="margin: 0; font-size: 1.75rem;">@yield('page-title', 'Backend Dashboard')</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="text-align: right; line-height: 1.3;">
+                        <span style="display: block; font-weight: 700; font-size: 0.9rem; color: #111b21;">{{ $user?->name }}</span>
+                        <span style="font-size: 0.75rem; color: #667781; font-weight: 600;">{{ ucfirst($user?->role ?? 'user') }}</span>
+                    </div>
+                    <a href="{{ route('profile.edit') }}" style="display: block;">
+                        <img src="{{ $user?->avatar_url }}" alt="Avatar" id="header-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; transition: all 0.2s ease-in-out; box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onmouseover="this.style.transform='scale(1.08)'; this.style.borderColor='#008069';" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#ddd';">
+                    </a>
+                </div>
             </header>
 
             @include('partials.flash')

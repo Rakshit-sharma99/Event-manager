@@ -25,7 +25,12 @@
         <tbody>
             @foreach($guests as $guest)
             <tr>
-                <td>{{ $guest->name }}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{{ $guest->avatar_url }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; flex-shrink: 0;">
+                        <span>{{ $guest->name }}</span>
+                    </div>
+                </td>
                 <td>{{ $guest->email }}</td>
                 <td>
                     @if($guest->invite_sent_at)

@@ -463,8 +463,12 @@
                              data-profile="{{ json_encode($conv['profile']) }}"
                              onclick="selectConversation('{{ $conv['booking_id'] }}')">
                             
-                            <div class="avatar-badge">
-                                {{ strtoupper(substr($conv['other_name'], 0, 1)) }}
+                            <div class="avatar-badge" style="background: none; padding: 0;">
+                                @if(!empty($conv['other_avatar']))
+                                    <img src="{{ $conv['other_avatar'] }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                @else
+                                    <span style="font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #e2e8f0; border-radius: 50%;">{{ strtoupper(substr($conv['other_name'], 0, 1)) }}</span>
+                                @endif
                                 <div class="online-indicator"></div>
                             </div>
 
@@ -649,24 +653,30 @@ function executeSearch() {
         if (filteredChats.length === 0) {
             chatListContainer.innerHTML = '<p class="plain-muted" style="padding: 12px 16px; margin: 0; font-size: 0.85rem; color:#888;">No active chats match your query.</p>';
         } else {
-            chatListContainer.innerHTML = filteredChats.map(conv => `
-                <div class="whatsapp-conv-item ${activeThreadId === conv.booking_id ? 'active-chat' : ''}" 
-                     onclick="selectConversation('${conv.booking_id}')">
-                    <div class="avatar-badge">
-                        ${esc(conv.other_name.substring(0, 1))}
-                    </div>
-                    <div class="conv-details">
-                        <div class="conv-row-1">
-                            <span class="conv-name">${esc(conv.other_name)}</span>
-                            <span class="conv-time">${esc(conv.last_time)}</span>
+            chatListContainer.innerHTML = filteredChats.map(conv => {
+                const avatarHtml = conv.other_avatar 
+                    ? `<img src="${conv.other_avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
+                    : `<span style="font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #e2e8f0; border-radius: 50%;">${esc(conv.other_name.substring(0, 1))}</span>`;
+                
+                return `
+                    <div class="whatsapp-conv-item ${activeThreadId === conv.booking_id ? 'active-chat' : ''}" 
+                         onclick="selectConversation('${conv.booking_id}')">
+                        <div class="avatar-badge" style="background: none; padding: 0;">
+                            ${avatarHtml}
                         </div>
-                        <div class="conv-row-2">
-                            <span class="conv-last-msg">${esc(conv.last_message || 'No messages yet')}</span>
-                            ${conv.message_count > 0 ? `<span class="conv-unread-badge">${conv.message_count}</span>` : ''}
+                        <div class="conv-details">
+                            <div class="conv-row-1">
+                                <span class="conv-name">${esc(conv.other_name)}</span>
+                                <span class="conv-time">${esc(conv.last_time)}</span>
+                            </div>
+                            <div class="conv-row-2">
+                                <span class="conv-last-msg">${esc(conv.last_message || 'No messages yet')}</span>
+                                ${conv.message_count > 0 ? `<span class="conv-unread-badge">${conv.message_count}</span>` : ''}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
         // Populate Uncontacted Invited Guests (only show if active tab is guest or all)
@@ -693,10 +703,14 @@ function executeSearch() {
                         `;
                     }
                     
+                    const avatarHtml = guest.avatar_url
+                        ? `<img src="${guest.avatar_url}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
+                        : `<span style="font-weight: 700; color: #475569; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #e2e8f0; border-radius: 50%;">${esc(guest.name.substring(0, 1))}</span>`;
+                    
                     return `
                         <div class="whatsapp-conv-item" style="cursor: default;">
-                            <div class="avatar-badge">
-                                ${esc(guest.name.substring(0, 1))}
+                            <div class="avatar-badge" style="background: none; padding: 0;">
+                                ${avatarHtml}
                             </div>
                             <div class="conv-details">
                                 <div class="conv-row-1">
@@ -800,7 +814,20 @@ function selectConversation(threadId) {
     // Populate active chat header
     document.getElementById('chat-header-name').textContent = name;
     document.getElementById('chat-header-event').textContent = eventName;
-    document.getElementById('chat-header-avatar').textContent = name.substring(0, 1).toUpperCase();
+
+    const imgEl = activeEl.querySelector('.avatar-badge img');
+    const headerAvatar = document.getElementById('chat-header-avatar');
+    const profileAvatar = document.getElementById('profile-panel-avatar');
+
+    if (imgEl) {
+        headerAvatar.innerHTML = `<img src="${imgEl.src}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        headerAvatar.style.background = 'none';
+        headerAvatar.style.padding = '0';
+    } else {
+        headerAvatar.textContent = name.substring(0, 1).toUpperCase();
+        headerAvatar.style.background = '#e2e8f0';
+        headerAvatar.style.padding = '';
+    }
 
     const statusBadge = document.getElementById('chat-header-status-badge');
     if (profile) {
@@ -818,7 +845,15 @@ function selectConversation(threadId) {
 
     // Populate profile details
     if (profile) {
-        document.getElementById('profile-panel-avatar').textContent = name.substring(0, 1).toUpperCase();
+        if (imgEl) {
+            profileAvatar.innerHTML = `<img src="${imgEl.src}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            profileAvatar.style.background = 'none';
+            profileAvatar.style.padding = '0';
+        } else {
+            profileAvatar.textContent = name.substring(0, 1).toUpperCase();
+            profileAvatar.style.background = '#e2e8f0';
+            profileAvatar.style.padding = '';
+        }
         document.getElementById('profile-name').textContent = profile.name;
         
         let roleName = 'User';

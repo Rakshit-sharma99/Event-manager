@@ -69,4 +69,24 @@ class Event extends BaseModel
     {
         return $this->hasMany(EventBudgetAllocation::class, 'event_id');
     }
+
+    /**
+     * Get event cover photo URL.
+     */
+    public function getCoverImageUrlAttribute(): string
+    {
+        if ($this->cover_image) {
+            return asset('storage/' . $this->cover_image);
+        }
+
+        if ($this->banner) {
+            if (str_starts_with($this->banner, 'http://') || str_starts_with($this->banner, 'https://')) {
+                return $this->banner;
+            }
+            return asset('storage/' . $this->banner);
+        }
+
+        // Stunning default high-res cover placeholder
+        return 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80';
+    }
 }

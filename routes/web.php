@@ -14,6 +14,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\VendorDashboardController;
 use App\Http\Controllers\SmartBudgetController;
+use App\Http\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'landing'])->name('landing');
@@ -94,6 +95,13 @@ Route::middleware(['auth', 'jwt.session'])->group(function () {
     // Profile (all roles)
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Media Upload Routes
+    Route::post('/profile/photo', [MediaController::class, 'uploadProfilePhoto'])->name('profile.photo.upload');
+    Route::delete('/profile/photo', [MediaController::class, 'deleteProfilePhoto'])->name('profile.photo.delete');
+    Route::post('/vendor/gallery', [MediaController::class, 'uploadVendorGallery'])->name('vendor.gallery.upload');
+    Route::delete('/vendor/gallery/{id}', [MediaController::class, 'deleteVendorGallery'])->name('vendor.gallery.delete');
+    Route::post('/events/{id}/cover', [MediaController::class, 'uploadEventCover'])->name('events.cover.upload');
 
     // Vendor directory (all roles)
     Route::get('/vendors', [VendorController::class, 'index'])->name('vendors.index');

@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\HasAvatar;
+
 class Guest extends BaseModel
 {
+    use HasAvatar;
+
     protected $collection = 'guests';
 
     protected function casts(): array

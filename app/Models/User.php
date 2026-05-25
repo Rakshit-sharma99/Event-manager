@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use MongoDB\Laravel\Auth\User as Authenticatable;
+use App\Traits\HasAvatar;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasAvatar;
 
     protected $connection = 'mongodb';
     protected $collection = 'users';
 
     protected $fillable = [
         'name', 'email', 'password', 'role', 'phone', 'phone_number', 'residence',
-        'avatar', 'profile_complete',
+        'avatar', 'profile_photo', 'profile_complete',
         'email_verified_at', 'jwt_token',
         // OTP fields
         'otp', 'otp_expires_at', 'otp_attempts', 'otp_resend_count', 'otp_last_resent_at',
