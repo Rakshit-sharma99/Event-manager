@@ -2,250 +2,293 @@
 @section('page-title', ($vendor->business_name ?: $vendor->name ?: 'Vendor Detail'))
 
 @section('content')
-    {{-- Top Info Bar --}}
-    <div class="admin-card" style="margin-bottom: 24px;">
-        <div style="display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
-            <div style="width: 72px; height: 72px; border-radius: 14px; background: linear-gradient(135deg, var(--admin-accent), #059669); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: #fff; flex-shrink: 0;">
-                {{ strtoupper(substr($vendor->business_name ?: $vendor->name ?: '?', 0, 1)) }}
-            </div>
-            <div style="flex: 1; min-width: 200px;">
-                <h2 style="margin: 0 0 4px; font-size: 1.4rem; font-weight: 800; color: var(--admin-text);">
-                    {{ $vendor->business_name ?: $vendor->name ?: 'Unnamed Business' }}
-                </h2>
-                <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.85rem; color: var(--admin-text-muted);">
-                    <span>📁 {{ $vendor->category ?? 'No category' }}</span>
-                    <span>📍 {{ $vendor->base_location ?? $vendor->location ?? 'No location' }}</span>
-                    <span>⭐ {{ number_format($vendor->rating ?? 0, 1) }} ({{ $vendor->total_reviews ?? 0 }} reviews)</span>
-                    <span>📧 {{ $vendor->contact_email ?? '—' }}</span>
-                    <span>📞 {{ $vendor->contact_number ?? '—' }}</span>
+<div class="space-y-6 pb-12" data-animate="fade-up">
+    {{-- Top Info Bar Card --}}
+    <x-card>
+        <div class="flex items-start gap-5 flex-wrap justify-between">
+            <div class="flex gap-4 items-center">
+                <div class="w-16 h-16 rounded-md bg-brand-gradient flex items-center justify-center text-2xl font-extrabold text-white flex-shrink-0">
+                    {{ strtoupper(substr($vendor->business_name ?: $vendor->name ?: '?', 0, 1)) }}
                 </div>
+                <div class="min-w-0">
+                    <h2 class="text-h2 font-extrabold text-neutral-dark mb-1">
+                        {{ $vendor->business_name ?: $vendor->name ?: 'Unnamed Business' }}
+                    </h2>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-caption text-surface-500 font-medium">
+                        <span>📁 {{ ucfirst($vendor->category ?? 'No category') }}</span>
+                        <span>📍 {{ $vendor->base_location ?? $vendor->location ?? 'No location' }}</span>
+                        <span>⭐ {{ number_format($vendor->rating ?? 0, 1) }} ({{ $vendor->total_reviews ?? 0 }} reviews)</span>
+                        <span>📧 {{ $vendor->contact_email ?? '—' }}</span>
+                        <span>📞 {{ $vendor->contact_number ?? '—' }}</span>
+                    </div>
 
-                {{-- Completion Bar --}}
-                <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-                    <span style="font-size: 0.78rem; color: var(--admin-text-muted); font-weight: 600;">Profile {{ $vendor->completion_percentage }}%</span>
-                    <div style="flex: 1; max-width: 200px; height: 6px; background: var(--admin-primary); border-radius: 3px; overflow: hidden;">
-                        <div style="height: 100%; width: {{ $vendor->completion_percentage }}%; background: linear-gradient(90deg, var(--admin-accent), #34d399);"></div>
+                    {{-- Completion Bar --}}
+                    <div class="flex items-center gap-3 mt-3">
+                        <span class="text-[11px] text-surface-500 font-bold">Profile completion:</span>
+                        <div class="w-48 h-2 bg-surface-100 rounded-full overflow-hidden flex-shrink-0">
+                            <div class="h-full bg-brand-gradient rounded-full transition-all duration-300" style="width: {{ $vendor->completion_percentage }}%;"></div>
+                        </div>
+                        <span class="text-[10px] text-surface-500 font-bold">{{ $vendor->completion_percentage }}%</span>
                     </div>
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                <span class="status-badge {{ $vendor->verification_status ?? 'pending' }}" style="font-size: 0.82rem; padding: 5px 14px;">
-                    {{ str_replace('_', ' ', ucfirst($vendor->verification_status ?? 'pending')) }}
-                </span>
-                <span style="font-size: 0.72rem; color: var(--admin-text-muted);">
+            <div class="flex flex-col items-end gap-2">
+                @php
+                    $statusVariant = match($vendor->verification_status) {
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        'under_review' => 'info',
+                        default => 'warning',
+                    };
+                @endphp
+                <x-badge :variant="$statusVariant" class="uppercase text-[10px] tracking-wider py-1 px-3">{{ str_replace('_', ' ', $vendor->verification_status ?? 'pending') }}</x-badge>
+                <span class="text-caption text-surface-400">
                     Registered {{ $vendor->created_at?->format('M d, Y') ?? '—' }}
                 </span>
             </div>
         </div>
-    </div>
+    </x-card>
 
-    <div class="admin-grid-2" style="margin-bottom: 24px;">
+    {{-- Main 2-column Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Documents Panel --}}
-        <div class="admin-card">
-            <div class="card-header">
-                <h3>📄 Verification Documents</h3>
-            </div>
+        <x-card>
+            <h3 class="text-h3 font-bold text-neutral-dark mb-4 pb-2 border-b border-surface-100 flex items-center gap-2">
+                <span>📄</span> Verification Documents
+            </h3>
 
             @php
                 $docTypes = ['govt_id' => 'Government ID', 'pan' => 'PAN Card', 'aadhaar' => 'Aadhaar Card', 'gst' => 'GST Certificate', 'business_license' => 'Business License'];
                 $uploadedDocs = $documents->keyBy('document_type');
             @endphp
 
-            @foreach($docTypes as $type => $label)
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(51,65,85,0.4);">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        @if(isset($uploadedDocs[$type]))
-                            <span style="color: #10b981; font-size: 1.1rem;">✓</span>
-                        @else
-                            <span style="color: #ef4444; font-size: 1.1rem;">✕</span>
-                        @endif
-                        <span style="font-size: 0.88rem;">{{ $label }}</span>
-                    </div>
-                    @if(isset($uploadedDocs[$type]))
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-size: 0.72rem; color: var(--admin-text-muted);">{{ $uploadedDocs[$type]->original_filename }}</span>
-                            <a href="{{ route('admin.vendors.document', [$vendor->getKey(), $uploadedDocs[$type]->getKey()]) }}"
-                                target="_blank" class="admin-btn admin-btn-secondary admin-btn-sm">View</a>
+            <div class="divide-y divide-surface-100">
+                @foreach($docTypes as $type => $label)
+                    <div class="py-3.5 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            @if(isset($uploadedDocs[$type]))
+                                <span class="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">✓</span>
+                            @else
+                                <span class="w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold">×</span>
+                            @endif
+                            <span class="text-body font-medium text-neutral-dark">{{ $label }}</span>
                         </div>
-                    @else
-                        <span style="font-size: 0.72rem; color: var(--admin-text-muted);">Not uploaded</span>
-                    @endif
-                </div>
-            @endforeach
-        </div>
+                        @if(isset($uploadedDocs[$type]))
+                            <div class="flex items-center gap-3">
+                                <span class="text-caption text-surface-400 max-w-[150px] truncate" title="{{ $uploadedDocs[$type]->original_filename }}">{{ $uploadedDocs[$type]->original_filename }}</span>
+                                <x-btn variant="outline" size="sm" href="{{ route('admin.vendors.document', [$vendor->getKey(), $uploadedDocs[$type]->getKey()]) }}" target="_blank">View</x-btn>
+                            </div>
+                        @else
+                            <span class="text-caption text-surface-400">Not uploaded</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </x-card>
 
         {{-- Admin Notes & Actions --}}
-        <div class="admin-card">
-            <div class="card-header">
-                <h3>⚡ Admin Actions</h3>
+        <x-card class="flex flex-col justify-between">
+            <div>
+                <h3 class="text-h3 font-bold text-neutral-dark mb-4 pb-2 border-b border-surface-100 flex items-center gap-2">
+                    <span>⚡</span> Admin Actions
+                </h3>
+
+                {{-- Current admin notes --}}
+                @if($vendor->admin_notes)
+                    <div class="p-4 bg-surface-50 border border-surface-200 rounded-md mb-4">
+                        <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Internal Admin Notes</span>
+                        <p class="text-body text-surface-700 leading-relaxed">{{ $vendor->admin_notes }}</p>
+                    </div>
+                @endif
+
+                {{-- Rejection reason --}}
+                @if($vendor->rejection_reason)
+                    <div class="p-4 bg-red-50/50 border border-red-200 rounded-md mb-4">
+                        <span class="text-[10px] font-bold text-danger uppercase tracking-wider block mb-1">Rejection Reason</span>
+                        <p class="text-body text-danger-dark leading-relaxed">{{ $vendor->rejection_reason }}</p>
+                    </div>
+                @endif
             </div>
-
-            {{-- Current admin notes --}}
-            @if($vendor->admin_notes)
-                <div style="padding: 12px; background: var(--admin-primary); border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--admin-border);">
-                    <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; margin-bottom: 4px;">ADMIN NOTES</div>
-                    <div style="font-size: 0.85rem; color: var(--admin-text);">{{ $vendor->admin_notes }}</div>
-                </div>
-            @endif
-
-            {{-- Rejection reason --}}
-            @if($vendor->rejection_reason)
-                <div style="padding: 12px; background: rgba(239,68,68,0.08); border-radius: 8px; margin-bottom: 16px; border: 1px solid rgba(239,68,68,0.2);">
-                    <div style="font-size: 0.72rem; color: #ef4444; font-weight: 600; margin-bottom: 4px;">REJECTION REASON</div>
-                    <div style="font-size: 0.85rem; color: var(--admin-text);">{{ $vendor->rejection_reason }}</div>
-                </div>
-            @endif
 
             {{-- Action Buttons --}}
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="space-y-4 pt-4 border-t border-surface-100">
                 @if(in_array($vendor->verification_status, ['pending', 'under_review', 'rejected']))
-                    <form method="POST" action="{{ route('admin.vendors.approve', $vendor) }}">
+                    <form method="POST" action="{{ route('admin.vendors.approve', $vendor) }}" class="space-y-3">
                         @csrf
                         <textarea name="admin_notes" placeholder="Add admin notes (optional)..." rows="2"
-                            style="width: 100%; background: var(--admin-primary); border: 1px solid var(--admin-border); border-radius: 8px; padding: 10px; color: var(--admin-text); font-size: 0.85rem; resize: vertical; margin-bottom: 8px;"></textarea>
-                        <button type="submit" class="admin-btn admin-btn-primary" style="width: 100%; justify-content: center;" onclick="return confirm('Approve this vendor? They will become visible in the directory.')">
+                                  class="w-full px-3 py-2 border border-surface-200 rounded-sm text-body focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"></textarea>
+                        <x-btn type="submit" class="w-full text-center justify-center" onclick="return confirm('Approve this vendor? They will become visible in the directory.')">
                             ✓ Approve Vendor
-                        </button>
+                        </x-btn>
                     </form>
                 @endif
 
-                @if($vendor->verification_status !== 'rejected')
-                    <button type="button" class="admin-btn admin-btn-danger" style="width: 100%; justify-content: center;" onclick="document.getElementById('rejectModal').classList.add('active')">
-                        ✕ Reject Vendor
-                    </button>
-                @endif
+                <div class="grid grid-cols-2 gap-3">
+                    @if($vendor->verification_status !== 'rejected')
+                        <x-btn type="button" variant="danger" class="text-center justify-center" onclick="document.getElementById('rejectModal').style.display = 'flex'">
+                            ✕ Reject Vendor
+                        </x-btn>
+                    @endif
 
-                @if($vendor->is_active)
-                    <form method="POST" action="{{ route('admin.vendors.suspend', $vendor) }}">
-                        @csrf
-                        <button type="submit" class="admin-btn admin-btn-warning" style="width: 100%; justify-content: center;" onclick="return confirm('Suspend this vendor? They will be hidden from the directory.')">
-                            ⏸ Suspend Vendor
-                        </button>
-                    </form>
-                @elseif($vendor->is_verified && !$vendor->is_active)
-                    <form method="POST" action="{{ route('admin.vendors.activate', $vendor) }}">
-                        @csrf
-                        <button type="submit" class="admin-btn admin-btn-primary" style="width: 100%; justify-content: center;">
-                            ▶ Re-activate Vendor
-                        </button>
-                    </form>
-                @endif
+                    @if($vendor->is_active)
+                        <form method="POST" action="{{ route('admin.vendors.suspend', $vendor) }}" class="inline">
+                            @csrf
+                            <x-btn type="submit" variant="outline" class="w-full text-center justify-center !border-warning !text-warning hover:!bg-warning hover:!text-white" onclick="return confirm('Suspend this vendor? They will be hidden from the directory.')">
+                                ⏸ Suspend
+                            </x-btn>
+                        </form>
+                    @elseif($vendor->is_verified && !$vendor->is_active)
+                        <form method="POST" action="{{ route('admin.vendors.activate', $vendor) }}" class="inline">
+                            @csrf
+                            <x-btn type="submit" class="w-full text-center justify-center">
+                                ▶ Activate
+                            </x-btn>
+                        </form>
+                    @endif
+                </div>
             </div>
-        </div>
+        </x-card>
     </div>
 
     {{-- Business Details --}}
-    <div class="admin-card" style="margin-bottom: 24px;">
-        <div class="card-header">
-            <h3>🏪 Business Details</h3>
-        </div>
+    <x-card>
+        <h3 class="text-h3 font-bold text-neutral-dark mb-6 pb-2 border-b border-surface-100">🏪 Business Details</h3>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Description</div>
-                <div style="font-size: 0.88rem; color: var(--admin-text);">{{ $vendor->description ?: '—' }}</div>
+                <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Description</span>
+                <p class="text-body text-neutral-dark leading-relaxed">{{ $vendor->description ?: '—' }}</p>
             </div>
             <div>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Speciality</div>
-                <div style="font-size: 0.88rem; color: var(--admin-text);">{{ $vendor->speciality ?: '—' }}</div>
+                <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Speciality</span>
+                <p class="text-body text-neutral-dark font-medium">{{ $vendor->speciality ?: '—' }}</p>
             </div>
             <div>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Price Range</div>
-                <div style="font-size: 0.88rem; color: var(--admin-text);">₹{{ number_format($vendor->budget_min ?? $vendor->price_min ?? 0) }} — ₹{{ number_format($vendor->budget_max ?? $vendor->price_max ?? 0) }}</div>
+                <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Price Range</span>
+                <p class="text-body text-neutral-dark font-bold">₹{{ number_format($vendor->budget_min ?? $vendor->price_min ?? 0) }} — ₹{{ number_format($vendor->budget_max ?? $vendor->price_max ?? 0) }}</p>
             </div>
             <div>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Work Location</div>
-                <div style="font-size: 0.88rem; color: var(--admin-text);">{{ $vendor->work_location ?: '—' }}</div>
+                <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Work Location</span>
+                <p class="text-body text-neutral-dark">{{ $vendor->work_location ?: '—' }}</p>
             </div>
             <div>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Services</div>
-                <div style="font-size: 0.88rem; color: var(--admin-text);">
+                <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Services</span>
+                <p class="text-body text-neutral-dark">
                     @if($vendor->services_provided && count($vendor->services_provided) > 0)
                         {{ implode(', ', $vendor->services_provided) }}
                     @else
                         —
                     @endif
-                </div>
+                </p>
             </div>
             <div>
-                <div style="font-size: 0.72rem; color: var(--admin-text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Owner</div>
-                <div style="font-size: 0.88rem; color: var(--admin-text);">{{ $user?->name ?? '—' }} ({{ $user?->email ?? '—' }})</div>
+                <span class="text-[10px] font-bold text-surface-400 uppercase tracking-wider block mb-1">Owner</span>
+                <p class="text-body text-neutral-dark font-medium">{{ $user?->name ?? '—' }} <span class="text-caption text-surface-400 font-normal">({{ $user?->email ?? '—' }})</span></p>
             </div>
         </div>
-    </div>
+    </x-card>
 
     {{-- Booking History --}}
-    <div class="admin-card" style="margin-bottom: 24px;">
-        <div class="card-header">
-            <h3>📋 Booking History ({{ $bookings->count() }})</h3>
+    <x-card padding="p-0" class="overflow-hidden">
+        <div class="px-6 py-4 border-b border-surface-100">
+            <h3 class="text-h3 font-bold text-neutral-dark">📋 Booking History ({{ $bookings->count() }})</h3>
         </div>
         @if($bookings->count() > 0)
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Event</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($bookings as $booking)
-                        @php $event = $booking->event; @endphp
-                        <tr>
-                            <td>{{ $event?->event_name ?? 'Unknown Event' }}</td>
-                            <td>{{ $booking->booking_date?->format('M d, Y') ?? '—' }}</td>
-                            <td>₹{{ number_format($booking->amount ?? 0) }}</td>
-                            <td><span class="status-badge {{ $booking->status ?? 'pending' }}">{{ ucfirst($booking->status ?? 'pending') }}</span></td>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-surface-50 border-b border-surface-150">
+                            <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Event</th>
+                            <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Amount</th>
+                            <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Status</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-surface-100">
+                        @foreach($bookings as $booking)
+                            @php $event = $booking->event; @endphp
+                            <tr class="hover:bg-surface-50/50 transition-colors">
+                                <td class="px-6 py-4 text-body font-bold text-neutral-dark">
+                                    {{ $event?->event_name ?? 'Unknown Event' }}
+                                </td>
+                                <td class="px-6 py-4 text-caption text-surface-500">
+                                    {{ $booking->booking_date?->format('M d, Y') ?? '—' }}
+                                </td>
+                                <td class="px-6 py-4 text-body font-bold text-neutral-dark">
+                                    ₹{{ number_format($booking->amount ?? 0) }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    @php
+                                        $badgeVar = match($booking->status) {
+                                            'confirmed' => 'success',
+                                            'cancelled' => 'danger',
+                                            'negotiating' => 'warning',
+                                            default => 'gray',
+                                        };
+                                    @endphp
+                                    <x-badge :variant="$badgeVar" class="uppercase text-[9px] tracking-wider">{{ $booking->status ?? 'pending' }}</x-badge>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @else
-            <p style="color: var(--admin-text-muted); font-size: 0.85rem; text-align: center; padding: 16px 0;">No bookings yet.</p>
+            <p class="px-6 py-12 text-center text-body text-surface-400 bg-white">No bookings logged for this vendor yet.</p>
         @endif
-    </div>
+    </x-card>
 
     {{-- Audit Log / Verification Timeline --}}
-    <div class="admin-card">
-        <div class="card-header">
-            <h3>🕐 Verification Timeline</h3>
-        </div>
-        @forelse($auditLogs as $log)
-            <div class="activity-item">
-                <div class="activity-dot {{ str_contains($log->action, 'approved') || str_contains($log->action, 'activated') ? 'green' : (str_contains($log->action, 'rejected') || str_contains($log->action, 'suspended') ? 'red' : 'blue') }}"></div>
-                <div>
-                    <div class="activity-text">{{ str_replace('_', ' ', ucfirst($log->action)) }}</div>
-                    @if(isset($log->details['reason']))
-                        <div style="font-size: 0.78rem; color: #ef4444; margin-top: 2px;">Reason: {{ $log->details['reason'] }}</div>
-                    @endif
-                    <div class="activity-time">{{ $log->created_at?->format('M d, Y g:i A') ?? 'Unknown' }}</div>
+    <x-card>
+        <h3 class="text-h3 font-bold text-neutral-dark mb-6 pb-2 border-b border-surface-100">🕐 Verification Timeline</h3>
+        <div class="relative pl-6 border-l border-surface-200 ml-3 space-y-6">
+            @forelse($auditLogs as $log)
+                @php
+                    $isGood = str_contains($log->action, 'approved') || str_contains($log->action, 'activated');
+                    $isBad = str_contains($log->action, 'rejected') || str_contains($log->action, 'suspended');
+                    $dotColor = $isGood ? 'bg-success' : ($isBad ? 'bg-danger' : 'bg-primary-500');
+                @endphp
+                <div class="relative">
+                    <span class="absolute -left-[30px] top-1 w-3.5 h-3.5 rounded-full border-2 border-white {{ $dotColor }}"></span>
+                    <div>
+                        <strong class="text-body font-bold text-neutral-dark block">{{ str_replace('_', ' ', ucfirst($log->action)) }}</strong>
+                        @if(isset($log->details['reason']))
+                            <div class="p-3 rounded-md bg-red-50 border border-red-100 text-danger-dark text-caption font-medium mt-1">Reason: {{ $log->details['reason'] }}</div>
+                        @endif
+                        <span class="text-[10px] text-surface-400 block mt-1 font-medium">{{ $log->created_at?->format('M d, Y g:i A') ?? 'Unknown' }}</span>
+                    </div>
                 </div>
-            </div>
-        @empty
-            <p style="color: var(--admin-text-muted); font-size: 0.85rem; text-align: center; padding: 16px 0;">No verification activity yet.</p>
-        @endforelse
-    </div>
+            @empty
+                <p class="text-caption text-surface-400">No verification activity logged yet.</p>
+            @endforelse
+        </div>
+    </x-card>
+</div>
 
-    {{-- Reject Modal --}}
-    <div class="admin-modal-overlay" id="rejectModal">
-        <div class="admin-modal">
-            <h3>❌ Reject Vendor</h3>
-            <p style="color: var(--admin-text-muted); font-size: 0.85rem; margin-bottom: 16px;">
-                The vendor will be notified of the rejection and can re-upload their documents.
-            </p>
-            <form method="POST" action="{{ route('admin.vendors.reject', $vendor) }}">
-                @csrf
-                <label style="font-size: 0.78rem; color: var(--admin-text-muted); font-weight: 600; display: block; margin-bottom: 6px;">REJECTION REASON *</label>
-                <textarea name="rejection_reason" rows="3" required placeholder="e.g. Blurry document images, incomplete business license..."></textarea>
-                <label style="font-size: 0.78rem; color: var(--admin-text-muted); font-weight: 600; display: block; margin-bottom: 6px;">ADMIN NOTES (optional)</label>
-                <textarea name="admin_notes" rows="2" placeholder="Internal notes..."></textarea>
-                <div class="modal-actions">
-                    <button type="button" class="admin-btn admin-btn-secondary" onclick="document.getElementById('rejectModal').classList.remove('active')">Cancel</button>
-                    <button type="submit" class="admin-btn admin-btn-danger">Reject Vendor</button>
-                </div>
-            </form>
-        </div>
+{{-- Reject Modal overlay --}}
+<div id="rejectModal" style="display: none;" class="fixed inset-0 z-[100] bg-neutral-dark/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="document.getElementById('rejectModal').style.display = 'none'">
+    <div class="bg-white border border-surface-200 rounded-md p-6 max-w-md w-full shadow-lg" onclick="event.stopPropagation()">
+        <h3 class="text-h3 font-bold text-neutral-dark mb-2">❌ Reject Vendor Application</h3>
+        <p class="text-caption text-surface-500 mb-6">The vendor will be immediately notified of the rejection and will have to re-upload compliant documentation.</p>
+        
+        <form method="POST" action="{{ route('admin.vendors.reject', $vendor) }}" class="space-y-4">
+            @csrf
+            <div class="space-y-1.5">
+                <label class="block text-caption font-bold text-surface-500 uppercase tracking-wider">Rejection Reason *</label>
+                <textarea name="rejection_reason" rows="3" required placeholder="e.g. Blurry document images, business license expired..." class="w-full px-3 py-2 border border-surface-200 rounded-sm text-body focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"></textarea>
+            </div>
+            
+            <div class="space-y-1.5">
+                <label class="block text-caption font-bold text-surface-500 uppercase tracking-wider">Internal Admin Notes (optional)</label>
+                <textarea name="admin_notes" rows="2" placeholder="Internal audit remarks..." class="w-full px-3 py-2 border border-surface-200 rounded-sm text-body focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"></textarea>
+            </div>
+            
+            <div class="flex justify-end gap-3 pt-2">
+                <x-btn type="button" variant="outline" size="sm" onclick="document.getElementById('rejectModal').style.display = 'none'">Cancel</x-btn>
+                <x-btn type="submit" variant="danger" size="sm">Reject Vendor</x-btn>
+            </div>
+        </form>
     </div>
+</div>
 @endsection

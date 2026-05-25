@@ -2,115 +2,132 @@
 @section('page-title', 'User Management')
 
 @section('content')
+<div class="space-y-6 pb-12" data-animate="fade-up">
     {{-- Tabs & Search --}}
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
-        <div class="admin-tabs">
-            <a href="{{ route('admin.users') }}" class="admin-tab {{ !request('role') ? 'active' : '' }}">
-                All <span style="opacity: 0.7;">({{ $roleCounts['all'] }})</span>
+    <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+        <div class="flex gap-1 p-1 bg-surface-100 rounded-lg border border-surface-200">
+            <a href="{{ route('admin.users') }}" 
+               class="px-4 py-2 rounded-md font-medium text-caption transition-all
+                      {{ !request('role') ? 'bg-primary-500 text-white shadow-sm' : 'text-surface-600 hover:text-neutral-dark hover:bg-surface-200/50' }}">
+                All <span class="opacity-70">({{ $roleCounts['all'] }})</span>
             </a>
-            <a href="{{ route('admin.users', ['role' => 'planner']) }}" class="admin-tab {{ request('role') === 'planner' ? 'active' : '' }}">
-                Planners <span style="opacity: 0.7;">({{ $roleCounts['planner'] }})</span>
-            </a>
-            <a href="{{ route('admin.users', ['role' => 'vendor']) }}" class="admin-tab {{ request('role') === 'vendor' ? 'active' : '' }}">
-                Vendors <span style="opacity: 0.7;">({{ $roleCounts['vendor'] }})</span>
-            </a>
-            <a href="{{ route('admin.users', ['role' => 'guest']) }}" class="admin-tab {{ request('role') === 'guest' ? 'active' : '' }}">
-                Guests <span style="opacity: 0.7;">({{ $roleCounts['guest'] }})</span>
-            </a>
-            <a href="{{ route('admin.users', ['role' => 'admin']) }}" class="admin-tab {{ request('role') === 'admin' ? 'active' : '' }}">
-                Admins <span style="opacity: 0.7;">({{ $roleCounts['admin'] }})</span>
-            </a>
+            @foreach(['planner' => 'Planners', 'vendor' => 'Vendors', 'guest' => 'Guests', 'admin' => 'Admins'] as $rKey => $rLabel)
+                <a href="{{ route('admin.users', ['role' => $rKey]) }}" 
+                   class="px-4 py-2 rounded-md font-medium text-caption transition-all
+                          {{ request('role') === $rKey ? 'bg-primary-500 text-white shadow-sm' : 'text-surface-600 hover:text-neutral-dark hover:bg-surface-200/50' }}">
+                    {{ $rLabel }} <span class="opacity-70">({{ $roleCounts[$rKey] }})</span>
+                </a>
+            @endforeach
         </div>
 
-        <form method="GET" class="admin-search" style="min-width: 280px;">
+        <form method="GET" class="flex items-center gap-2 px-4 py-2 bg-white border border-surface-200 rounded-lg min-w-[280px] focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/10 transition-all">
             @if(request('role'))
                 <input type="hidden" name="role" value="{{ request('role') }}">
             @endif
-            <span>🔍</span>
-            <input type="text" name="q" placeholder="Search name, email, phone..." value="{{ request('q') }}">
+            <svg class="w-4 h-4 text-surface-400" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input type="text" name="q" placeholder="Search name, email, phone..." value="{{ request('q') }}" class="bg-transparent border-none outline-none text-body text-neutral-dark placeholder:text-surface-400 p-0 flex-1">
         </form>
     </div>
 
     {{-- Users Table --}}
-    <div class="admin-card" style="overflow-x: auto;">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                    <th>Verified</th>
-                    <th>Status</th>
-                    <th>Registered</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($users as $u)
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <img src="{{ $u->avatar_url }}" alt="" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid var(--admin-border);">
-                                <strong style="font-size: 0.88rem;">{{ $u->name }}</strong>
-                            </div>
-                        </td>
-                        <td><span style="font-size: 0.82rem; color: var(--admin-text-muted);">{{ $u->email }}</span></td>
-                        <td>
-                            <span class="status-badge {{ $u->role === 'admin' ? 'approved' : ($u->role === 'vendor' ? 'under_review' : 'active') }}">
-                                {{ ucfirst($u->role) }}
-                            </span>
-                        </td>
-                        <td><span style="font-size: 0.82rem;">{{ $u->phone_number ?? '—' }}</span></td>
-                        <td>
-                            @if($u->email_verified_at)
-                                <span style="color: #10b981; font-size: 0.82rem;">✓ Verified</span>
-                            @else
-                                <span style="color: #f59e0b; font-size: 0.82rem;">Unverified</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($u->is_banned)
-                                <span class="status-badge rejected">Banned</span>
-                            @elseif($u->is_suspended)
-                                <span class="status-badge pending">Suspended</span>
-                            @else
-                                <span class="status-badge approved">Active</span>
-                            @endif
-                        </td>
-                        <td><span style="font-size: 0.78rem; color: var(--admin-text-muted);">{{ $u->created_at?->format('M d, Y') ?? '—' }}</span></td>
-                        <td>
-                            @if($u->role !== 'admin')
-                                <div style="display: flex; gap: 4px;">
-                                    @if(!$u->is_suspended && !$u->is_banned)
-                                        <form method="POST" action="{{ route('admin.users.suspend', $u) }}">
-                                            @csrf
-                                            <button type="submit" class="admin-btn admin-btn-warning admin-btn-sm" onclick="return confirm('Suspend {{ $u->name }}?')">Suspend</button>
-                                        </form>
-                                        <form method="POST" action="{{ route('admin.users.ban', $u) }}">
-                                            @csrf
-                                            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm" onclick="return confirm('Ban {{ $u->name }}? This is a serious action.')">Ban</button>
-                                        </form>
-                                    @else
-                                        <form method="POST" action="{{ route('admin.users.activate', $u) }}">
-                                            @csrf
-                                            <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm">Activate</button>
-                                        </form>
-                                    @endif
+    <x-card padding="p-0" class="overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-surface-50 border-b border-surface-150">
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Phone</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Verified</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Registered</th>
+                        <th class="px-6 py-4 text-left text-caption font-bold text-surface-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-100">
+                    @forelse($users as $u)
+                        <tr class="hover:bg-surface-50/50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ $u->avatar_url }}" alt="" class="w-8 h-8 rounded-full object-cover border border-surface-200 flex-shrink-0">
+                                    <span class="text-body font-bold text-neutral-dark">{{ $u->name }}</span>
                                 </div>
-                            @else
-                                <span style="font-size: 0.78rem; color: var(--admin-text-muted);">Protected</span>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 32px; color: var(--admin-text-muted);">No users found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                            </td>
+                            <td class="px-6 py-4 text-body text-surface-600">
+                                {{ $u->email }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @php
+                                    $roleVar = match($u->role) {
+                                        'admin' => 'success',
+                                        'vendor' => 'info',
+                                        'planner' => 'primary',
+                                        default => 'gray',
+                                    };
+                                @endphp
+                                <x-badge :variant="$roleVar" class="text-[9px] uppercase tracking-wider">{{ $u->role }}</x-badge>
+                            </td>
+                            <td class="px-6 py-4 text-body text-surface-600">
+                                {{ $u->phone_number ?? '—' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($u->email_verified_at)
+                                    <x-badge variant="success" :dot="true" class="text-[9px] uppercase">Verified</x-badge>
+                                @else
+                                    <x-badge variant="warning" :dot="true" class="text-[9px] uppercase">Unverified</x-badge>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($u->is_banned)
+                                    <x-badge variant="danger" class="uppercase text-[9px] tracking-wider">Banned</x-badge>
+                                @elseif($u->is_suspended)
+                                    <x-badge variant="warning" class="uppercase text-[9px] tracking-wider">Suspended</x-badge>
+                                @else
+                                    <x-badge variant="success" class="uppercase text-[9px] tracking-wider">Active</x-badge>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-caption text-surface-500">
+                                {{ $u->created_at?->format('M d, Y') ?? '—' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($u->role !== 'admin')
+                                    <div class="flex gap-2">
+                                        @if(!$u->is_suspended && !$u->is_banned)
+                                            <form method="POST" action="{{ route('admin.users.suspend', $u) }}" class="inline">
+                                                @csrf
+                                                <x-btn type="submit" variant="outline" size="sm" class="!border-warning !text-warning hover:!bg-warning hover:!text-white" onclick="return confirm('Suspend {{ $u->name }}?')">Suspend</x-btn>
+                                            </form>
+                                            <form method="POST" action="{{ route('admin.users.ban', $u) }}" class="inline">
+                                                @csrf
+                                                <x-btn type="submit" variant="danger" size="sm" onclick="return confirm('Ban {{ $u->name }}? This is a serious action.')">Ban</x-btn>
+                                            </form>
+                                        @else
+                                            <form method="POST" action="{{ route('admin.users.activate', $u) }}" class="inline">
+                                                @csrf
+                                                <x-btn type="submit" size="sm">Activate</x-btn>
+                                            </form>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-caption text-surface-400 font-medium">Protected</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-body text-surface-400 bg-white">
+                                No users found.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </x-card>
 
-    <div class="admin-pagination">{{ $users->links() }}</div>
+    <div class="flex justify-center mt-6">
+        {{ $users->links() }}
+    </div>
+</div>
 @endsection
