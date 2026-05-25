@@ -19,7 +19,7 @@
 <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
     @foreach($vendors as $vendor)
         <article class="vendor-card glass overflow-hidden rounded-[2rem]" data-reveal>
-            <a href="{{ route('vendors.show',$vendor) }}"><div class="h-52 bg-cover bg-center" style="background-image:url('{{ $vendor->image_url }}')"></div></a>
+            <a href="{{ route('vendors.show',$vendor) }}"><div class="h-52 bg-cover bg-center" style="background-image:url('{{ $vendor->avatar_url }}')"></div></a>
             <div class="p-5">
                 <div class="mb-3 flex items-center justify-between"><span class="chip">{{ str($vendor->category)->headline() }}</span><span class="chip text-eventra-amber">★ {{ number_format($vendor->rating,1) }}</span></div>
                 <h3 class="font-display text-2xl font-bold">{{ $vendor->business_name }}</h3>

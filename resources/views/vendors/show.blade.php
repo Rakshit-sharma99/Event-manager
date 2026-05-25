@@ -3,7 +3,7 @@
 @section('content')
 <section class="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
     <div class="glass-strong overflow-hidden rounded-[2rem]" data-reveal>
-        <div class="h-80 bg-cover bg-center" style="background-image:url('{{ $vendor->image_url }}')"></div>
+        <div class="h-80 bg-cover bg-center" style="background-image:url('{{ $vendor->avatar_url }}')"></div>
         <div class="p-6">
             <div class="mb-4 flex flex-wrap gap-3"><span class="chip">{{ str($vendor->category)->headline() }}</span><span class="chip text-eventra-amber">★ {{ number_format($vendor->rating,1) }} · {{ $vendor->total_reviews }} reviews</span><span class="chip">{{ $vendor->location }}</span></div>
             <h2 class="font-display text-4xl font-bold">{{ $vendor->business_name }}</h2>
@@ -36,7 +36,7 @@
     </aside>
 </section>
 <section class="mt-6 grid gap-5 md:grid-cols-3">
-    @foreach(($vendor->gallery ?? []) as $image)
+    @foreach(($vendor->all_gallery_images) as $image)
         <div class="h-56 rounded-[2rem] bg-cover bg-center shadow-glow" style="background-image:url('{{ $image }}')"></div>
     @endforeach
 </section>
