@@ -21,6 +21,7 @@ class EventRequest extends FormRequest
             'luxury_level' => ['nullable', 'in:budget,balanced,premium,luxury'],
             'status' => ['nullable', 'in:planning,confirmed,completed'],
             'banner' => ['nullable', 'image', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
 
         if ($this->isMethod('post')) {
