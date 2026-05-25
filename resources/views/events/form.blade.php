@@ -16,7 +16,15 @@
         <div><label class="field-label">Total budget</label><input class="w-full" name="total_budget" type="number" value="{{ old('total_budget',$event->total_budget ?? 500000) }}" required></div>
         <div><label class="field-label">Luxury level</label><select class="w-full" name="luxury_level">@foreach(['budget' => 'Budget', 'balanced' => 'Balanced', 'premium' => 'Premium', 'luxury' => 'Luxury'] as $val => $lbl)<option value="{{ $val }}" @selected(old('luxury_level',$event->luxury_level ?? 'balanced')===$val)>{{ $lbl }}</option>@endforeach</select></div>
         <div><label class="field-label">Theme</label><input class="w-full" name="theme" value="{{ old('theme',$event->theme ?? 'Celestial Blue') }}"></div>
-        <div><label class="field-label">Banner</label><input class="w-full" name="banner" type="file"></div>
+        <div>
+            <label class="field-label">Event Cover Image</label>
+            <input class="w-full" name="cover_image" type="file" accept="image/*">
+            @if($event->cover_image)
+                <div class="mt-2">
+                    <img src="{{ asset('storage/' . $event->cover_image) }}" alt="Cover" style="max-height: 100px; border-radius: 8px; border: 1px solid #ccc;">
+                </div>
+            @endif
+        </div>
         <div class="sm:col-span-2"><button class="btn-primary">{{ $event->exists ? 'Save changes' : 'Create event' }}</button></div>
     </div>
     <aside class="glass rounded-[2rem] p-6" data-reveal>

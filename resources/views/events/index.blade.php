@@ -13,7 +13,7 @@
 <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
     @forelse($events as $event)
         <article class="vendor-card glass overflow-hidden rounded-[2rem]" data-reveal>
-            <div class="h-44 bg-cover bg-center" style="background-image:url('{{ $event->banner ?: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80' }}')"></div>
+            <div class="h-44 bg-cover bg-center" style="background-image:url('{{ $event->cover_image_url }}')"></div>
             <div class="p-5">
                 <div class="mb-3 flex items-center justify-between"><span class="chip">{{ $event->category }}</span><span class="chip">{{ ucfirst($event->status) }}</span></div>
                 <h3 class="font-display text-2xl font-bold">{{ $event->event_name }}</h3>
