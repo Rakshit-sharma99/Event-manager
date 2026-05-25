@@ -37,6 +37,11 @@ class EventController extends Controller
             $data['banner'] = $request->file('banner')->store('banners', 'public');
         }
 
+        if ($request->hasFile('cover_image')) {
+            $mediaService = app(\App\Services\MediaUploadService::class);
+            $data['cover_image'] = $mediaService->uploadEventCover($request->file('cover_image'));
+        }
+
         $event = Event::create([
             ...$data,
             'user_id' => (string) $request->user()->getKey(),
@@ -76,6 +81,12 @@ class EventController extends Controller
         if ($request->hasFile('banner')) {
             $data['banner'] = $request->file('banner')->store('banners', 'public');
         }
+
+        if ($request->hasFile('cover_image')) {
+            $mediaService = app(\App\Services\MediaUploadService::class);
+            $data['cover_image'] = $mediaService->uploadEventCover($request->file('cover_image'), $event->cover_image ?? null);
+        }
+
         $event->update($data);
 
         return redirect()->route('events.show', $event)->with('success', 'Event updated.');
