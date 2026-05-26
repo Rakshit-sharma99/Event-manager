@@ -9,10 +9,10 @@
     --db-sidebar-bg: #ffffff;
     --db-sidebar-w: 260px;
     --db-sidebar-collapsed: 72px;
-    --db-primary: #7c3aed;
-    --db-primary-light: #a855f7;
-    --db-primary-bg: rgba(124, 58, 237, 0.08);
-    --db-primary-gradient: linear-gradient(135deg, #7c3aed, #a855f7);
+    --db-primary: #6366f1;
+    --db-primary-light: #8b5cf6;
+    --db-primary-bg: rgba(99, 102, 241, 0.08);
+    --db-primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
     --db-text: #1e1b4b;
     --db-text-muted: #6b7280;
     --db-border: #e5e7eb;
@@ -112,7 +112,7 @@ body.db-body .app-sidebar {
 .db-sidebar-user {
     margin: 8px 16px;
     padding: 12px;
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -213,7 +213,7 @@ body.db-body .app-sidebar {
     background: var(--db-primary);
     color: #fff;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .db-nav-item.active svg {
@@ -276,7 +276,7 @@ body.db-body .app-sidebar {
 .db-sidebar-cta {
     margin: 12px 16px 16px;
     padding: 20px 16px;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     border-radius: 16px;
     color: #fff;
     position: relative;
@@ -377,7 +377,7 @@ body.db-body .app-main-panel {
 
 .db-search:focus-within {
     border-color: var(--db-primary-light);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .db-search svg {
@@ -526,7 +526,7 @@ body.db-body .app-main-panel {
 }
 
 .db-stat-icon--purple {
-    background: rgba(124, 58, 237, 0.1);
+    background: rgba(99, 102, 241, 0.1);
     color: var(--db-primary);
 }
 
@@ -676,7 +676,7 @@ body.db-body .app-main-panel {
 
 .db-event-status--upcoming {
     background: rgba(168, 85, 247, 0.1);
-    color: #7c3aed;
+    color: #6366f1;
 }
 
 .db-event-status--completed {
@@ -748,7 +748,7 @@ body.db-body .app-main-panel {
     font-size: 1.2rem;
 }
 
-.db-quick-icon--purple { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+.db-quick-icon--purple { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
 .db-quick-icon--blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
 .db-quick-icon--pink { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
 .db-quick-icon--green { background: rgba(16, 185, 129, 0.1); color: #10b981; }
@@ -846,7 +846,7 @@ body.db-body .app-main-panel {
 }
 
 .db-budget-link:hover {
-    background: rgba(124, 58, 237, 0.15);
+    background: rgba(99, 102, 241, 0.15);
 }
 
 /* ── Second Row Grid ── */
@@ -917,7 +917,7 @@ body.db-body .app-main-panel {
     transform: scale(1.1);
 }
 
-.db-vendor-cat-icon--purple { background: rgba(124, 58, 237, 0.08); }
+.db-vendor-cat-icon--purple { background: rgba(99, 102, 241, 0.08); }
 .db-vendor-cat-icon--pink { background: rgba(236, 72, 153, 0.08); }
 .db-vendor-cat-icon--blue { background: rgba(59, 130, 246, 0.08); }
 .db-vendor-cat-icon--red { background: rgba(239, 68, 68, 0.08); }
@@ -926,7 +926,7 @@ body.db-body .app-main-panel {
 
 /* ── Motivation Card ── */
 .db-motivation {
-    background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc);
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #c084fc);
     border: none;
     color: #fff;
     display: flex;
@@ -1004,7 +1004,7 @@ body.db-body .app-main-panel {
     font-size: 0.9rem;
 }
 
-.db-activity-icon--purple { background: rgba(124, 58, 237, 0.1); }
+.db-activity-icon--purple { background: rgba(99, 102, 241, 0.1); }
 .db-activity-icon--green { background: rgba(16, 185, 129, 0.1); }
 .db-activity-icon--amber { background: rgba(245, 158, 11, 0.1); }
 
@@ -1057,7 +1057,7 @@ body.db-body .app-main-panel {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(124, 58, 237, 0.1);
+    background: rgba(99, 102, 241, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1097,9 +1097,9 @@ body.db-body .app-main-panel {
 }
 
 .db-connected-btn:hover {
-    background: #6d28d9;
+    background: #4f46e5;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 /* ── Animations ── */

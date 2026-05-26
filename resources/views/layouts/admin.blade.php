@@ -7,10 +7,8 @@
     <title>{{ $title ?? 'Eventra Admin' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-neutral-light text-neutral-dark font-sans min-h-screen">
+<body class="eventra-light-theme font-sans min-h-screen">
 
-    {{-- Particle Canvas --}}
-    <canvas id="particle-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
 
     <div class="relative z-10 flex min-h-screen" x-data="{ sidebarOpen: true, mobileSidebar: false }">
 
@@ -153,7 +151,7 @@
 
         {{-- Main Content Section --}}
         <div class="flex-1 flex flex-col min-w-0">
-            <header class="sticky top-0 z-30 bg-neutral-light/80 backdrop-blur-md border-b border-surface-100">
+            <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-surface-200">
                 <div class="flex items-center justify-between px-6 h-16 gap-4">
                     <div class="flex items-center gap-4">
                         <button @click="mobileSidebar = !mobileSidebar" class="lg:hidden w-9 h-9 rounded-sm border border-surface-200 flex items-center justify-center text-surface-500 hover:bg-primary-50 hover:text-primary-500">

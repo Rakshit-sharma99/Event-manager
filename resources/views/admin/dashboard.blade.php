@@ -256,13 +256,13 @@
 
         // Delay slightly for accurate bounding client rect calculations
         setTimeout(() => {
-            drawBarChart('registrationsChart', regLabels, regValues, '#6C5CE7');
-            drawBarChart('bookingsChart', bookLabels, bookValues, '#A855F7');
+            drawBarChart('registrationsChart', regLabels, regValues, '#6366F1');
+            drawBarChart('bookingsChart', bookLabels, bookValues, '#8B5CF6');
         }, 150);
 
         window.addEventListener('resize', () => {
-            drawBarChart('registrationsChart', regLabels, regValues, '#6C5CE7');
-            drawBarChart('bookingsChart', bookLabels, bookValues, '#A855F7');
+            drawBarChart('registrationsChart', regLabels, regValues, '#6366F1');
+            drawBarChart('bookingsChart', bookLabels, bookValues, '#8B5CF6');
         });
     });
 </script>

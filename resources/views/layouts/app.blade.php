@@ -7,12 +7,7 @@
     <title>{{ $title ?? 'Eventra' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="premium-dark-theme text-white font-sans min-h-screen relative overflow-x-hidden">
-
-    {{-- Floating Premium Background Blur Blobs --}}
-    <div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-[120px] pointer-events-none z-0"></div>
-    <div class="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-accent/8 blur-[150px] pointer-events-none z-0"></div>
-    <div class="fixed top-[30%] left-[25%] w-[35vw] h-[35vw] rounded-full bg-secondary/6 blur-[100px] pointer-events-none z-0"></div>
+<body class="eventra-light-theme font-sans min-h-screen relative overflow-x-hidden">
 
 
     @php
@@ -44,7 +39,7 @@
     @endphp
 
     {{-- Particle Canvas --}}
-    <canvas id="particle-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
 
     <div class="relative z-10 flex min-h-screen" x-data="{ sidebarOpen: true, mobileSidebar: false }">
 
@@ -54,11 +49,11 @@
         {{-- Desktop Sidebar --}}
         <aside
             :class="sidebarOpen ? 'w-64' : 'w-[72px]'"
-            class="hidden lg:flex flex-col bg-white border-r border-surface-200 sticky top-0 h-screen overflow-y-auto overflow-x-hidden transition-all duration-300 flex-shrink-0"
+            class="hidden lg:flex flex-col bg-white border-r border-surface-200 sticky top-0 h-screen overflow-y-auto overflow-x-hidden transition-all duration-300 flex-shrink-0 z-20"
         >
             {{-- Header --}}
             <div class="flex items-center justify-between px-5 h-16 border-b border-surface-100">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-h4 font-extrabold text-primary-500 overflow-hidden">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-h4 font-extrabold text-primary-600 overflow-hidden">
                     <span class="text-lg flex-shrink-0">✦</span>
                     <span x-show="sidebarOpen" x-transition class="whitespace-nowrap">Eventra</span>
                 </a>
@@ -189,7 +184,7 @@
              ═══════════════════════════════════════ --}}
         <div class="flex-1 flex flex-col min-w-0">
             {{-- Topbar --}}
-            <header class="sticky top-0 z-30 bg-neutral-light/80 backdrop-blur-md border-b border-surface-100">
+            <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-surface-200">
                 <div class="flex items-center justify-between px-6 h-16 gap-4">
                     <div class="flex items-center gap-4">
                         {{-- Mobile menu button --}}
@@ -198,7 +193,7 @@
                         </button>
                         <div>
                             <h1 class="text-h4 font-extrabold text-neutral-dark leading-tight">{{ $greeting }}, {{ $user?->name }}! 👋</h1>
-                            <p class="text-caption text-surface-400 hidden sm:block">Let's make today productive and your event unforgettable.</p>
+                            <p class="text-caption text-surface-500 hidden sm:block">Let's make today productive and your event unforgettable.</p>
                         </div>
                     </div>
 

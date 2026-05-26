@@ -41,12 +41,12 @@
         {{-- Total Events --}}
         <div class="card p-5 flex items-center justify-between gap-4 group">
             <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-xl shadow-[0_0_15px_rgba(108,92,231,0.15)] group-hover:scale-110 transition-transform">
+                <div class="w-12 h-12 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center flex-shrink-0 text-xl group-hover:scale-110 transition-transform">
                     📅
                 </div>
                 <div>
-                    <p class="text-caption text-surface-400 font-medium uppercase tracking-wider">Total Events</p>
-                    <p class="text-h2 font-extrabold text-white mt-0.5">{{ $totalEvents }}</p>
+                    <p class="text-caption text-surface-500 font-medium uppercase tracking-wider">Total Events</p>
+                    <p class="text-h2 font-extrabold text-neutral-dark mt-0.5">{{ $totalEvents }}</p>
                 </div>
             </div>
         </div>
@@ -54,12 +54,12 @@
         {{-- Upcoming --}}
         <div class="card p-5 flex items-center justify-between gap-4 group">
             <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0 text-xl shadow-[0_0_15px_rgba(168,85,247,0.15)] group-hover:scale-110 transition-transform">
+                <div class="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center flex-shrink-0 text-xl group-hover:scale-110 transition-transform">
                     🕒
                 </div>
                 <div>
-                    <p class="text-caption text-surface-400 font-medium uppercase tracking-wider">Upcoming</p>
-                    <p class="text-h2 font-extrabold text-white mt-0.5">{{ $upcomingCount }}</p>
+                    <p class="text-caption text-surface-500 font-medium uppercase tracking-wider">Upcoming</p>
+                    <p class="text-h2 font-extrabold text-neutral-dark mt-0.5">{{ $upcomingCount }}</p>
                 </div>
             </div>
         </div>
@@ -67,12 +67,12 @@
         {{-- In Progress --}}
         <div class="card p-5 flex items-center justify-between gap-4 group">
             <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center flex-shrink-0 text-xl shadow-[0_0_15px_rgba(20,184,166,0.15)] group-hover:scale-110 transition-transform">
+                <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center flex-shrink-0 text-xl group-hover:scale-110 transition-transform">
                     <span class="inline-block animate-spin-slow">🔄</span>
                 </div>
                 <div>
-                    <p class="text-caption text-surface-400 font-medium uppercase tracking-wider">In Progress</p>
-                    <p class="text-h2 font-extrabold text-white mt-0.5">{{ $inProgressCount }}</p>
+                    <p class="text-caption text-surface-500 font-medium uppercase tracking-wider">In Progress</p>
+                    <p class="text-h2 font-extrabold text-neutral-dark mt-0.5">{{ $inProgressCount }}</p>
                 </div>
             </div>
         </div>
@@ -80,12 +80,12 @@
         {{-- Completed --}}
         <div class="card p-5 flex items-center justify-between gap-4 group">
             <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-success/10 border border-success/20 flex items-center justify-center flex-shrink-0 text-xl shadow-[0_0_15px_rgba(34,197,94,0.15)] group-hover:scale-110 transition-transform">
+                <div class="w-12 h-12 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0 text-xl group-hover:scale-110 transition-transform">
                     ✅
                 </div>
                 <div>
-                    <p class="text-caption text-surface-400 font-medium uppercase tracking-wider">Completed</p>
-                    <p class="text-h2 font-extrabold text-white mt-0.5">{{ $completedCount }}</p>
+                    <p class="text-caption text-surface-500 font-medium uppercase tracking-wider">Completed</p>
+                    <p class="text-h2 font-extrabold text-neutral-dark mt-0.5">{{ $completedCount }}</p>
                 </div>
             </div>
         </div>
@@ -121,29 +121,29 @@
         {{-- Upcoming Events --}}
         <x-card class="lg:col-span-1" data-animate="fade-up">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-h4 font-bold text-white">Upcoming Events</h3>
-                <a href="{{ route('events.index') }}" class="text-caption font-semibold text-primary-400 hover:text-primary-300 flex items-center gap-1 transition-all hover:gap-2">View All →</a>
+                <h3 class="text-h4 font-bold text-neutral-dark">Upcoming Events</h3>
+                <a href="{{ route('events.index') }}" class="text-caption font-semibold text-primary-600 hover:text-primary-500 flex items-center gap-1 transition-all hover:gap-2">View All →</a>
             </div>
 
             @forelse($upcoming as $event)
-                <div class="flex items-center gap-3.5 py-3.5 border-b border-white/5 last:border-0 group hover:bg-white/[0.01] px-2 rounded-xl transition-all">
+                <div class="flex items-center gap-3.5 py-3.5 border-b border-surface-100 last:border-0 group hover:bg-primary-50/30 px-2 rounded-xl transition-all">
                     @if($event->cover_image)
-                        <img src="{{ asset('storage/' . $event->cover_image) }}" alt="{{ $event->event_name }}" class="w-16 h-12 rounded-xl object-cover flex-shrink-0 border border-white/10 group-hover:scale-105 transition-transform">
+                        <img src="{{ asset('storage/' . $event->cover_image) }}" alt="{{ $event->event_name }}" class="w-16 h-12 rounded-xl object-cover flex-shrink-0 border border-surface-200 group-hover:scale-105 transition-transform">
                     @else
-                        <div class="w-16 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-white/5 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform">🎉</div>
+                        <div class="w-16 h-12 rounded-xl bg-gradient-to-br from-primary-50 to-purple-50 border border-surface-200 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform">🎉</div>
                     @endif
                     <div class="flex-1 min-w-0">
-                        <a href="{{ route('events.show', $event) }}" class="text-body font-bold text-white hover:text-primary-400 transition-colors block truncate">{{ $event->event_name }}</a>
-                        <div class="flex items-center gap-2 text-caption text-surface-400 mt-1 flex-wrap font-medium">
+                        <a href="{{ route('events.show', $event) }}" class="text-body font-bold text-neutral-dark hover:text-primary-600 transition-colors block truncate">{{ $event->event_name }}</a>
+                        <div class="flex items-center gap-2 text-caption text-surface-500 mt-1 flex-wrap font-medium">
                             <span class="flex items-center gap-1">📅 {{ optional($event->event_date)->format('M d, Y') ?? 'TBD' }}</span>
                             <span>•</span>
                             <span class="truncate max-w-[100px]">{{ $event->location ?? 'TBD' }}</span>
                         </div>
-                        <span class="text-caption text-surface-400 flex items-center gap-1 mt-0.5 font-medium">👥 {{ $event->guest_count_expected ?? 0 }} guests</span>
+                        <span class="text-caption text-surface-500 flex items-center gap-1 mt-0.5 font-medium">👥 {{ $event->guest_count_expected ?? 0 }} guests</span>
                     </div>
                     <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary-300 border border-primary/30">Upcoming</span>
-                        <a href="{{ route('events.show', $event) }}" class="w-7 h-7 rounded-lg border border-white/10 flex items-center justify-center text-surface-400 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all flex-shrink-0">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-50 text-primary-600 border border-primary-100">Upcoming</span>
+                        <a href="{{ route('events.show', $event) }}" class="w-7 h-7 rounded-lg border border-surface-200 flex items-center justify-center text-surface-400 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all flex-shrink-0">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </a>
                     </div>
@@ -156,47 +156,47 @@
         {{-- Quick Actions --}}
         <x-card data-animate="fade-up">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-h4 font-bold text-white">Quick Actions <span class="text-primary-400">✦</span></h3>
+                <h3 class="text-h4 font-bold text-neutral-dark">Quick Actions <span class="text-primary-500">✦</span></h3>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <a href="{{ route('events.create') }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all group relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <a href="{{ route('events.create') }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-white hover:bg-primary-50/50 hover:-translate-y-1 transition-all group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(108,92,231,0.25)] group-hover:scale-110 transition-transform">➕</div>
-                    <span class="text-caption font-semibold text-surface-300 group-hover:text-white">New Event</span>
+                    <span class="text-caption font-semibold text-surface-500 group-hover:text-primary-700">New Event</span>
                 </a>
-                <a href="{{ route('vendors.index') }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all group relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <a href="{{ route('vendors.index') }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-white hover:bg-blue-50/50 hover:-translate-y-1 transition-all group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(59,130,246,0.25)] group-hover:scale-110 transition-transform">🏪</div>
-                    <span class="text-caption font-semibold text-surface-300 group-hover:text-white">Vendors</span>
+                    <span class="text-caption font-semibold text-surface-500 group-hover:text-blue-700">Vendors</span>
                 </a>
                 @if($activeEvent)
-                    <a href="{{ route('guests.index', $activeEvent) }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all group relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <a href="{{ route('guests.index', $activeEvent) }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-white hover:bg-pink-50/50 hover:-translate-y-1 transition-all group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-pink-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(236,72,153,0.25)] group-hover:scale-110 transition-transform">🎟️</div>
-                        <span class="text-caption font-semibold text-surface-300 group-hover:text-white">Guests</span>
+                        <span class="text-caption font-semibold text-surface-500 group-hover:text-pink-700">Guests</span>
                     </a>
-                    <a href="{{ route('tasks.index', $activeEvent) }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all group relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <a href="{{ route('tasks.index', $activeEvent) }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-white hover:bg-green-50/50 hover:-translate-y-1 transition-all group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(34,197,94,0.25)] group-hover:scale-110 transition-transform">✅</div>
-                        <span class="text-caption font-semibold text-surface-300 group-hover:text-white">Tasks</span>
+                        <span class="text-caption font-semibold text-surface-500 group-hover:text-green-700">Tasks</span>
                     </a>
-                    <a href="{{ route('budget.index', $activeEvent) }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all group relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <a href="{{ route('budget.index', $activeEvent) }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-white hover:bg-amber-50/50 hover:-translate-y-1 transition-all group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-amber-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(245,158,11,0.25)] group-hover:scale-110 transition-transform">💰</div>
-                        <span class="text-caption font-semibold text-surface-300 group-hover:text-white">Budget</span>
+                        <span class="text-caption font-semibold text-surface-500 group-hover:text-amber-700">Budget</span>
                     </a>
                 @else
                     @foreach([['🎟️','Guests','pink'],['✅','Tasks','green'],['💰','Budget','amber']] as [$icon,$label,$color])
-                        <div class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.01] opacity-40 cursor-not-allowed">
+                        <div class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-surface-50 opacity-40 cursor-not-allowed">
                             <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-xl">{{ $icon }}</div>
                             <span class="text-caption font-semibold text-surface-500">{{ $label }}</span>
                         </div>
                     @endforeach
                 @endif
-                <a href="{{ route('profile.edit') }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:-translate-y-1 transition-all group relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <a href="{{ route('profile.edit') }}" class="flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border border-surface-200 bg-white hover:bg-indigo-50/50 hover:-translate-y-1 transition-all group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(99,102,241,0.25)] group-hover:scale-110 transition-transform">👤</div>
-                    <span class="text-caption font-semibold text-surface-300 group-hover:text-white">Profile</span>
+                    <span class="text-caption font-semibold text-surface-500 group-hover:text-indigo-700">Profile</span>
                 </a>
             </div>
         </x-card>
@@ -204,16 +204,16 @@
         {{-- Budget Overview --}}
         <x-card data-animate="fade-up">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-h4 font-bold text-white">Budget Overview</h3>
-                <button class="text-surface-400 hover:text-white transition-colors">•••</button>
+                <h3 class="text-h4 font-bold text-neutral-dark">Budget Overview</h3>
+                <button class="text-surface-400 hover:text-neutral-dark transition-colors">•••</button>
             </div>
 
             <div class="flex flex-col items-center mb-5">
                 <div class="relative w-44 h-44 flex items-center justify-center">
                     <canvas id="budgetDonut" class="absolute inset-0"></canvas>
                     <div class="flex flex-col items-center justify-center">
-                        <span class="text-[1.35rem] font-extrabold text-white">₹{{ number_format($stats['spent']) }}</span>
-                        <span class="text-caption text-surface-400 mt-0.5">Total Spent</span>
+                        <span class="text-[1.35rem] font-extrabold text-neutral-dark">₹{{ number_format($stats['spent']) }}</span>
+                        <span class="text-caption text-surface-500 mt-0.5">Total Spent</span>
                     </div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
             <div id="budgetLegend" class="space-y-2.5 my-2"></div>
 
             @if($activeEvent)
-                <a href="{{ route('budget.index', $activeEvent) }}" class="block text-center mt-5 py-3 rounded-xl bg-gradient-to-r from-primary/80 to-secondary/80 text-white text-caption font-semibold hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
+                <a href="{{ route('budget.index', $activeEvent) }}" class="block text-center mt-5 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-purple-500 text-white text-caption font-semibold hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
                     View Budget Details →
                 </a>
             @endif
@@ -234,16 +234,16 @@
         {{-- Find Vendors --}}
         <x-card data-animate="fade-up">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-h4 font-bold text-white">Find Vendors</h3>
-                <a href="{{ route('vendors.index') }}" class="text-caption font-semibold text-primary-400 hover:text-primary-300 flex items-center gap-1 transition-all hover:gap-2">View Directory →</a>
+                <h3 class="text-h4 font-bold text-neutral-dark">Find Vendors</h3>
+                <a href="{{ route('vendors.index') }}" class="text-caption font-semibold text-primary-600 hover:text-primary-500 flex items-center gap-1 transition-all hover:gap-2">View Directory →</a>
             </div>
 
-            <div class="flex items-center gap-2.5 px-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl mb-5 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/50 transition-all">
+            <div class="flex items-center gap-2.5 px-4 py-3 bg-surface-50 border border-surface-200 rounded-xl mb-5 focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500/30 transition-all">
                 <svg class="w-4 h-4 text-surface-400 flex-shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                <input type="text" placeholder="Search by vendor name..." class="flex-1 bg-transparent border-none outline-none text-body text-white placeholder:text-surface-400 p-0 font-sans">
+                <input type="text" placeholder="Search by vendor name..." class="flex-1 bg-transparent border-none outline-none text-body text-neutral-dark placeholder:text-surface-400 p-0 font-sans">
             </div>
 
-            <p class="text-[11px] font-bold text-surface-400 uppercase tracking-wider mb-3">Popular Categories</p>
+            <p class="text-[11px] font-bold text-surface-500 uppercase tracking-wider mb-3">Popular Categories</p>
 
             <div class="flex flex-wrap gap-3">
                 @foreach([
@@ -251,15 +251,15 @@
                     ['💐','Décor','red'],['🎵','Entertainment','green'],['•••','More','gray']
                 ] as [$icon,$name,$color])
                     <a href="{{ route('vendors.index') }}{{ $name !== 'More' ? '?category=' . strtolower($name) : '' }}" class="flex flex-col items-center gap-2 w-14 group">
-                        <div class="w-12 h-12 rounded-full bg-white/[0.04] border border-white/5 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-primary/20 group-hover:border-primary/30 transition-all shadow-sm">{{ $icon }}</div>
-                        <span class="text-[11px] font-semibold text-surface-300 group-hover:text-white transition-colors text-center truncate w-full">{{ $name }}</span>
+                        <div class="w-12 h-12 rounded-full bg-surface-50 border border-surface-200 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-primary-50 group-hover:border-primary-200 transition-all shadow-sm">{{ $icon }}</div>
+                        <span class="text-[11px] font-semibold text-surface-500 group-hover:text-primary-600 transition-colors text-center truncate w-full">{{ $name }}</span>
                     </a>
                 @endforeach
             </div>
         </x-card>
 
         {{-- Motivation Card --}}
-        <div class="card bg-gradient-to-br from-primary/80 via-purple-600/70 to-pink-500/60 !border-white/10 text-white relative overflow-hidden p-6 flex flex-col justify-between" data-animate="fade-up">
+        <div class="card bg-gradient-to-br from-primary-500 via-purple-500 to-pink-400 !border-transparent text-white relative overflow-hidden p-6 flex flex-col justify-between" data-animate="fade-up">
             <div>
                 <h3 class="text-[1.35rem] font-extrabold mb-2.5">You're doing great! 🎉</h3>
                 <p class="text-body text-white/80 leading-relaxed max-w-[70%]">
@@ -284,8 +284,8 @@
         {{-- Activity Feed --}}
         <x-card data-animate="fade-up">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-h4 font-bold text-white">Activity Feed</h3>
-                <button class="text-surface-400 hover:text-white transition-colors">•••</button>
+                <h3 class="text-h4 font-bold text-neutral-dark">Activity Feed</h3>
+                <button class="text-surface-400 hover:text-neutral-dark transition-colors">•••</button>
             </div>
 
             <div class="space-y-4">
@@ -295,33 +295,33 @@
                     ['💸', 'Expense added', 'Paid to Decor World', '1d ago', 'amber'],
                 ] as [$icon, $title, $desc, $time, $color])
                     <div class="flex gap-3.5 items-start group">
-                        <div class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/5 flex items-center justify-center flex-shrink-0 text-sm shadow-sm group-hover:scale-105 transition-transform">{{ $icon }}</div>
+                        <div class="w-10 h-10 rounded-full bg-surface-50 border border-surface-200 flex items-center justify-center flex-shrink-0 text-sm shadow-sm group-hover:scale-105 transition-transform">{{ $icon }}</div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-body font-bold text-white group-hover:text-primary-300 transition-colors">{{ $title }}</p>
-                            <p class="text-caption text-surface-400 mt-0.5">{{ $desc }}</p>
+                            <p class="text-body font-bold text-neutral-dark group-hover:text-primary-600 transition-colors">{{ $title }}</p>
+                            <p class="text-caption text-surface-500 mt-0.5">{{ $desc }}</p>
                         </div>
                         <span class="text-caption text-surface-500 flex-shrink-0 font-medium">{{ $time }}</span>
                     </div>
                 @endforeach
             </div>
 
-            <a href="#" class="flex items-center justify-center gap-1 mt-5 text-caption font-semibold text-primary-400 hover:text-primary-300 transition-all hover:gap-2">View All Activity →</a>
+            <a href="#" class="flex items-center justify-center gap-1 mt-5 text-caption font-semibold text-primary-600 hover:text-primary-500 transition-all hover:gap-2">View All Activity →</a>
         </x-card>
     </div>
 
     {{-- ── Stay Connected Banner ── --}}
-    <x-card class="flex flex-col sm:flex-row items-center justify-between gap-5 p-5 !border-white/5 relative overflow-hidden" data-animate="fade-up">
-        <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
+    <x-card class="flex flex-col sm:flex-row items-center justify-between gap-5 p-5 relative overflow-hidden" data-animate="fade-up">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary-50 to-transparent pointer-events-none"></div>
         <div class="flex items-center gap-4 z-10">
-            <div class="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-xl flex-shrink-0 shadow-[0_0_15px_rgba(108,92,231,0.1)]">
+            <div class="w-12 h-12 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center text-xl flex-shrink-0">
                 💬
             </div>
             <div>
-                <h4 class="text-body font-bold text-white">Stay connected</h4>
-                <p class="text-caption text-surface-400 mt-0.5">You have unread messages from your team and vendors.</p>
+                <h4 class="text-body font-bold text-neutral-dark">Stay connected</h4>
+                <p class="text-caption text-surface-500 mt-0.5">You have unread messages from your team and vendors.</p>
             </div>
         </div>
-        <a href="{{ route('chat.index') }}" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-600 text-white font-semibold text-body hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 z-10 flex items-center gap-2">
+        <a href="{{ route('chat.index') }}" class="px-5 py-2.5 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-semibold text-body hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 z-10 flex items-center gap-2">
             💬 Open Messages
         </a>
     </x-card>
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ctx.scale(2, 2);
 
     const total = {{ $stats['spent'] ?: 1 }};
-    const colors = ['#6C5CE7', '#3b82f6', '#EC4899', '#22C55E', '#f59e0b', '#6366f1'];
+    const colors = ['#6366F1', '#3b82f6', '#EC4899', '#22C55E', '#f59e0b', '#8B5CF6'];
 
     @if($activeEvent)
         fetch('/api/budget/{{ $activeEvent->getKey() }}/chart')
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let a = -Math.PI/2;
         ctx.clearRect(0,0,size,size);
         ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
-        ctx.strokeStyle='rgba(255, 255, 255, 0.04)'; ctx.lineWidth=lw; ctx.stroke();
+        ctx.strokeStyle='rgba(0, 0, 0, 0.04)'; ctx.lineWidth=lw; ctx.stroke();
         if(total<=0) return;
         data.forEach((item,i) => {
             const sa = (item.amount/total)*Math.PI*2;
@@ -382,9 +382,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const pct = total>0 ? Math.round((item.amount/total)*100) : 0;
             const name = (item.category||'Other').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
             return `<div class="flex items-center gap-2 text-body">
-                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${colors[i%colors.length]}; box-shadow: 0 0 8px ${colors[i%colors.length]}80"></span>
-                <span class="flex-1 text-surface-300 font-medium">${name}</span>
-                <span class="font-bold text-white">₹${Number(item.amount).toLocaleString('en-IN')}</span>
+                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${colors[i%colors.length]}"></span>
+                <span class="flex-1 text-surface-500 font-medium">${name}</span>
+                <span class="font-bold text-neutral-dark">₹${Number(item.amount).toLocaleString('en-IN')}</span>
                 <span class="text-caption text-surface-400 w-8 text-right font-semibold">${pct}%</span>
             </div>`;
         }).join('');

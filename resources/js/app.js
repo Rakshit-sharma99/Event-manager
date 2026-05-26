@@ -29,7 +29,7 @@ function initParticles() {
 
     function resize() {
         canvas.width = window.innerWidth;
-        canvas.height = document.documentElement.scrollHeight;
+        canvas.height = window.innerHeight;
     }
 
     // 4-pointed star path
@@ -60,7 +60,7 @@ function initParticles() {
         const isStar = Math.random() < 0.15;
         return {
             x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height + canvas.height * 0.1,
+            y: Math.random() * canvas.height,
             size: isStar ? 3 + Math.random() * 4 : 1 + Math.random() * 2,
             speedY: -(0.15 + Math.random() * 0.3),
             speedX: (Math.random() - 0.5) * 0.2,
@@ -218,12 +218,19 @@ function initPageTransition() {
  *  SPLASH SCREEN — first visit only
  * ════════════════════════════════════════════ */
 function initSplash() {
-    if (sessionStorage.getItem('eventra-splash-shown')) return;
+    try {
+        if (sessionStorage.getItem('eventra-splash-shown')) return;
+    } catch (e) {
+        // Safe fallback if sessionStorage is inaccessible (e.g. Incognito mode/third-party blockers)
+        return;
+    }
 
     const splash = document.getElementById('eventra-splash');
     if (!splash) return;
 
-    sessionStorage.setItem('eventra-splash-shown', 'true');
+    try {
+        sessionStorage.setItem('eventra-splash-shown', 'true');
+    } catch (e) {}
     splash.style.display = 'flex';
 
     setTimeout(() => {
@@ -269,4 +276,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── Start Alpine.js ── */
 Alpine.start();
+
+// Refresh ScrollTrigger on window load to fix size/offset miscalculations after resources load
+window.addEventListener('load', () => {
+    if (window.ScrollTrigger) {
+        window.ScrollTrigger.refresh();
+    }
+});
 
