@@ -27,18 +27,26 @@ function initParticles() {
     let particles = [];
     let animId;
 
+    const colors = [
+        '#FFD000', // Bright gold sunlight
+        '#FF85A1', // Rose pink
+        '#B794F4', // Pastel lavender
+        '#FFFEEA', // Super warm cream
+        '#FDA4AF'  // Peach sunset
+    ];
+
     function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
 
-    // 4-pointed star path
-    function drawStar(ctx, cx, cy, size, opacity) {
+    // 4-pointed star path with dynamic glowing color
+    function drawStar(ctx, cx, cy, size, opacity, color) {
         ctx.save();
         ctx.globalAlpha = opacity;
-        ctx.fillStyle = '#6C5CE7';
-        ctx.shadowColor = '#6C5CE7';
-        ctx.shadowBlur = 8;
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 12;
         ctx.beginPath();
         for (let i = 0; i < 4; i++) {
             const angle = (Math.PI / 2) * i - Math.PI / 2;
@@ -57,16 +65,17 @@ function initParticles() {
     }
 
     function createParticle() {
-        const isStar = Math.random() < 0.15;
+        const isStar = Math.random() < 0.2;
         return {
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            size: isStar ? 3 + Math.random() * 4 : 1 + Math.random() * 2,
-            speedY: -(0.15 + Math.random() * 0.3),
-            speedX: (Math.random() - 0.5) * 0.2,
-            opacity: 0.15 + Math.random() * 0.25,
+            size: isStar ? 3.5 + Math.random() * 4.5 : 1 + Math.random() * 2.5,
+            speedY: -(0.1 + Math.random() * 0.25),
+            speedX: (Math.random() - 0.5) * 0.15,
+            opacity: 0.15 + Math.random() * 0.35,
             fadeDir: Math.random() < 0.5 ? 1 : -1,
-            fadeSpeed: 0.002 + Math.random() * 0.004,
+            fadeSpeed: 0.0015 + Math.random() * 0.003,
+            color: colors[Math.floor(Math.random() * colors.length)],
             isStar,
         };
     }
@@ -74,7 +83,7 @@ function initParticles() {
     function init() {
         resize();
         particles = [];
-        const count = Math.min(70, Math.floor(canvas.width * canvas.height / 20000));
+        const count = Math.min(65, Math.floor(canvas.width * canvas.height / 22000));
         for (let i = 0; i < count; i++) {
             particles.push(createParticle());
         }
@@ -88,8 +97,8 @@ function initParticles() {
             p.y += p.speedY;
             p.opacity += p.fadeDir * p.fadeSpeed;
 
-            if (p.opacity <= 0.05 || p.opacity >= 0.4) p.fadeDir *= -1;
-            p.opacity = Math.max(0, Math.min(0.4, p.opacity));
+            if (p.opacity <= 0.08 || p.opacity >= 0.5) p.fadeDir *= -1;
+            p.opacity = Math.max(0.05, Math.min(0.5, p.opacity));
 
             if (p.y < -20 || p.x < -20 || p.x > canvas.width + 20) {
                 particles[i] = createParticle();
@@ -97,12 +106,17 @@ function initParticles() {
             }
 
             if (p.isStar) {
-                drawStar(ctx, p.x, p.y, p.size, p.opacity);
+                drawStar(ctx, p.x, p.y, p.size, p.opacity, p.color);
             } else {
+                ctx.save();
+                ctx.globalAlpha = p.opacity;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(108, 92, 231, ${p.opacity})`;
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 10;
                 ctx.fill();
+                ctx.restore();
             }
         });
 

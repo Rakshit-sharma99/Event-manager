@@ -557,48 +557,29 @@ input:-webkit-autofill:active {
  *  Background: #F5F3FF (lavender mist), Cards: white, Accents: #6366F1/#8B5CF6
  * ================================================================ */
 .eventra-light-theme {
-    background: #F5F3FF !important;
+    background: url('/images/dashboard-bg.png') no-repeat center center fixed !important;
+    background-size: cover !important;
     color: #1e1b4b !important;
 }
 
-/* Subtle decorative gradient behind content */
-.eventra-light-theme::before {
-    content: '';
-    position: fixed;
-    top: -20%;
-    left: -10%;
-    width: 60vw;
-    height: 60vw;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-}
-
+/* Subtle decorative gradient behind content - disabled to let dashboard-bg shine */
+.eventra-light-theme::before,
 .eventra-light-theme::after {
-    content: '';
-    position: fixed;
-    bottom: -15%;
-    right: -10%;
-    width: 50vw;
-    height: 50vw;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    display: none !important;
 }
 
-/* ── Light Sidebar ── */
+/* ── Light Sidebar (Translucent / Glassmorphic) ── */
 .eventra-light-theme aside {
-    background: #ffffff !important;
-    border-right: 1px solid #e5e7eb !important;
-    backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-right: 1px solid rgba(229, 231, 235, 0.4) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
 }
 
 .eventra-light-theme aside .border-b,
 .eventra-light-theme aside .border-t,
 .eventra-light-theme aside .border-surface-100 {
-    border-color: #f3f4f6 !important;
+    border-color: rgba(243, 244, 246, 0.3) !important;
 }
 
 .eventra-light-theme aside nav a {
@@ -607,7 +588,7 @@ input:-webkit-autofill:active {
 }
 
 .eventra-light-theme aside nav a:hover {
-    background: #f5f3ff !important;
+    background: rgba(245, 243, 255, 0.5) !important;
     color: #6366f1 !important;
 }
 
@@ -619,48 +600,53 @@ input:-webkit-autofill:active {
     color: #ffffff !important;
 }
 
-/* ── Light Header / Topbar ── */
+/* ── Light Header / Topbar (Translucent / Glassmorphic) ── */
 .eventra-light-theme header {
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border-bottom: 1px solid #e5e7eb !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.4) !important;
 }
 
 .eventra-light-theme header input {
-    background: #f9fafb !important;
-    border: 1px solid #e5e7eb !important;
+    background: rgba(249, 250, 251, 0.6) !important;
+    border: 1px solid rgba(229, 231, 235, 0.5) !important;
     color: #1e1b4b !important;
+    backdrop-filter: blur(5px);
 }
 
 .eventra-light-theme header .bg-white {
-    background: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(229, 231, 235, 0.5) !important;
 }
 
-/* ── Light Cards ── */
+/* ── Light Cards (Translucent / Glassmorphic) ── */
 .eventra-light-theme .card,
 .eventra-light-theme .card-glass {
-    background: #ffffff !important;
-    backdrop-filter: none !important;
-    border: 1px solid #e5e7eb !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     border-radius: 16px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .eventra-light-theme .card-hover:hover,
 .eventra-light-theme .card:hover {
-    border-color: #d4d4d8 !important;
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.08) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.1) !important;
     transform: translateY(-2px) !important;
 }
 
 /* Active Highlight Stats Card (Budget Spent) - keep gradient */
 .eventra-light-theme .card-hover.bg-brand-gradient {
-    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
-    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
 }
 
 /* ── Form Inputs (light theme) ── */

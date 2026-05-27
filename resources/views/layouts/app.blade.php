@@ -39,6 +39,7 @@
     @endphp
 
     {{-- Particle Canvas --}}
+    <canvas id="particle-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
 
 
     <div class="relative z-10 flex min-h-screen" x-data="{ sidebarOpen: true, mobileSidebar: false }">
